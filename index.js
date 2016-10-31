@@ -76,6 +76,7 @@ Suddenly.prototype.handleTasks = function (config) {
     suddenly.defaultTask('db:migrate', Database.migrate);
     suddenly.defaultTask('db:rollback', Database.rollback);
     suddenly.defaultTask('db:version', Database.version);
+    suddenly.defaultTask('db:schema', Database.schema);
 
     suddenly.defaultTask('generate:component', Generate.component);
     suddenly.defaultTask('generate:reducer', Generate.reducer);
