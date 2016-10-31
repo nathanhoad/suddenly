@@ -1,9 +1,11 @@
+const Path = require('path');
 const FS = require('fs-extra');
 const Webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const Log = require('./log');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
+
 const DEV_SERVER_PORT = 8080;
 
 const defaultWebpackConfig = require('./templates/webpack.config');
@@ -13,12 +15,13 @@ const Tasks = function () {};
 
 
 Tasks.prototype.clean = function (config) {
-    let tasks = this;
-    
     config = config || {};
     
+    let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
-        return FS.emptyDir(`${config.APP_ROOT || APP_ROOT}/build`, (err) => {
+        return FS.emptyDir(`${app_root}/build`, (err) => {
             if (err) return reject(err);
             
             Log.info('clean', 'Cleaned build directory');
@@ -30,13 +33,14 @@ Tasks.prototype.clean = function (config) {
 
 Tasks.prototype.build = function (config, args) {
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     config = config || {};
     args = args || [];
     
     var webpack_config;
     try {
-        webpack_config = require(`${config.APP_ROOT || APP_ROOT}/webpack.config`);
+        webpack_config = require(`${app_root}/webpack.config`);
     } catch (e) {
         webpack_config = defaultWebpackConfig(config);
     }
@@ -92,22 +96,24 @@ Tasks.prototype.build = function (config, args) {
     
 Tasks.prototype.run = function (config, args) {
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var webpack_config;
     try {
-        webpack_config = require(`${config.APP_ROOT || APP_ROOT}/webpack.config`);
+        webpack_config = require(`${app_root}/webpack.config`);
     } catch (e) {
         webpack_config = defaultWebpackConfig(config);
     }
     
-    let server_path = `${config.APP_ROOT || APP_ROOT}/app/server`;
+    let server_path = `${app_root}/app/server`;
     var server = require(server_path);
     
     return new Promise((resolve, reject) => {
         let compiler = Webpack(webpack_config);
+        let watcher;
         
         if (process.env.NODE_ENV !== 'production') {
-            FS.watch(server_path, { recursive: true }, (event, filename) => {
+            server.watcher = watcher = FS.watch(server_path, { recursive: true }, (event, filename) => {
                 server.stop(() => {
                     // Load in any actual file changes
                     Object.keys(require.cache).forEach((key) => {
@@ -116,6 +122,7 @@ Tasks.prototype.run = function (config, args) {
                         }
                     });
                     server = require(server_path);
+                    server.watcher = watcher;
                     
                     server.start(() => {
                         let now = new Date();
@@ -134,7 +141,7 @@ Tasks.prototype.run = function (config, args) {
         
         var assetServer = new WebpackDevServer(compiler, {
             hot: true,
-            contentBase: `${config.APP_ROOT || APP_ROOT}/build/`,
+            contentBase: `${app_root}/build/`,
             publicPath: '/assets/',
             noInfo: true
         });

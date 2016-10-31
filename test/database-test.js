@@ -19,8 +19,8 @@ lab.experiment('Database', () => {
     
     lab.beforeEach((done) => {
         config = {
-            APP_ROOT: Path.resolve(`${__dirname}/../tmp`),
-            DATABASE_URL: 'postgres://localhost:5432/suddenly_test'
+            APP_ROOT: `${__dirname}/../tmp`,
+            DATABASE_URL: process.env.DATABASE_URL || 'postgres://localhost:5432/suddenly_test'
         };
         
         knex = Knex({

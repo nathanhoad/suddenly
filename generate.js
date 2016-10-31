@@ -4,7 +4,7 @@ const Inflect = require('i')();
 const Knex = require('knex');
 const Log = require('./log');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 
 
 function setupKnex (config) {
@@ -47,6 +47,8 @@ Generate.prototype.migration = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:migration', 'No name specified');
@@ -55,7 +57,7 @@ Generate.prototype.migration = function (config, args) {
         
         const options = {
             tableName: 'schema_migrations',
-            directory: Path.resolve(`${config.APP_ROOT || APP_ROOT}/migrations`)
+            directory: Path.resolve(`${app_root}/migrations`)
         };
         
         let knex = setupKnex(config);
@@ -78,6 +80,8 @@ Generate.prototype.model = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:model', 'No name specified');
@@ -86,12 +90,12 @@ Generate.prototype.model = function (config, args) {
         
         const options = {
             tableName: 'schema_migrations',
-            directory: Path.resolve(`${config.APP_ROOT || APP_ROOT}/migrations`)
+            directory: Path.resolve(`${app_root}/migrations`)
         };
         
         let knex = setupKnex(config);
         let name = args[0].toLowerCase();
-        let models_path = `${config.APP_ROOT || APP_ROOT}/app/server/models`;
+        let models_path = `${app_root}/app/server/models`;
         FS.mkdirsSync(models_path);
         
         let files = [];
@@ -141,6 +145,8 @@ Generate.prototype.routes = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:routes', 'No name specified');
@@ -148,9 +154,9 @@ Generate.prototype.routes = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let routes_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/server/routes`);
+        let routes_path = Path.resolve(`${app_root}/app/server/routes`);
         FS.mkdirsSync(routes_path);
-        let routes_tests_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/test/routes`);
+        let routes_tests_path = Path.resolve(`${app_root}/test/routes`);
         FS.mkdirsSync(routes_tests_path);
         
         let files = [];
@@ -181,6 +187,8 @@ Generate.prototype.resource = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:resource', 'No name specified');
@@ -188,7 +196,7 @@ Generate.prototype.resource = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let resources_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/server/resources`);
+        let resources_path = Path.resolve(`${app_root}/app/server/resources`);
         FS.mkdirsSync(resources_path);
         let files = [];
         
@@ -207,6 +215,8 @@ Generate.prototype.notification = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:notification', 'No name specified');
@@ -214,7 +224,7 @@ Generate.prototype.notification = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let notifications_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/server/notifications`);
+        let notifications_path = Path.resolve(`${app_root}/app/server/notifications`);
         FS.mkdirsSync(notifications_path);
         
         let files = [];
@@ -245,6 +255,8 @@ Generate.prototype.actions = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:actions', 'No name specified');
@@ -252,9 +264,9 @@ Generate.prototype.actions = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let actions_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/client/actions`);
+        let actions_path = Path.resolve(`${app_root}/app/client/actions`);
         FS.mkdirsSync(actions_path);
-        let tests_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/test/actions`);
+        let tests_path = Path.resolve(`${app_root}/test/actions`);
         FS.mkdirsSync(tests_path);
         
         let files = [];
@@ -299,6 +311,8 @@ Generate.prototype.reducer = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:reducer', 'No name specified');
@@ -306,9 +320,9 @@ Generate.prototype.reducer = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let reducers_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/client/reducers`);
+        let reducers_path = Path.resolve(`${app_root}/app/client/reducers`);
         FS.mkdirsSync(reducers_path);
-        let tests_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/test/reducers`);
+        let tests_path = Path.resolve(`${app_root}/test/reducers`);
         FS.mkdirsSync(tests_path);
         
         let files = [];
@@ -328,7 +342,7 @@ Generate.prototype.reducer = function (config, args) {
         files.push(reducer_path);
         
         // Add the reduder to the index
-        let reducers_index_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/client/reducers/index.js`);
+        let reducers_index_path = Path.resolve(`${app_root}/app/client/reducers/index.js`);
         let reducers_index = FS.readFileSync(reducers_index_path, 'utf8').split("\n");
         
         let reducer_name = Inflect.underscore(Inflect.pluralize(name)).toLowerCase();
@@ -366,6 +380,8 @@ Generate.prototype.component = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:component', 'No name specified');
@@ -373,11 +389,11 @@ Generate.prototype.component = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let components_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/client/components`);
+        let components_path = Path.resolve(`${app_root}/app/client/components`);
         FS.mkdirsSync(components_path);
-        let styles_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/assets/styles`);
+        let styles_path = Path.resolve(`${app_root}/app/assets/styles`);
         FS.mkdirsSync(styles_path);
-        let tests_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/test/components`);
+        let tests_path = Path.resolve(`${app_root}/test/components`);
         FS.mkdirsSync(tests_path);
         let files = [];
         
@@ -425,6 +441,8 @@ Generate.prototype.style = function (config, args) {
     config = config || {};
     args = flags(args);
     
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
             Log.error('generate:component', 'No name specified');
@@ -432,7 +450,7 @@ Generate.prototype.style = function (config, args) {
         }
         
         let name = args[0].toLowerCase();
-        let styles_path = Path.resolve(`${config.APP_ROOT || APP_ROOT}/app/assets/styles`);
+        let styles_path = Path.resolve(`${app_root}/app/assets/styles`);
         FS.mkdirsSync(styles_path);
         
         let files = [];

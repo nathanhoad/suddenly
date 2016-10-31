@@ -1,13 +1,16 @@
+const Path = require('path');
 const Handlebars = require('handlebars');
 const NodeMailer = require('nodemailer');
 const SES = require('nodemailer-ses-transport');
 const FS = require('fs');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 
 
 const Mailer = function (config) {
     let mailer = this;
+    
+    config.APP_ROOT = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     mailer.config = config || {};
     
@@ -26,7 +29,7 @@ Mailer.prototype.render = function (filename, locals) {
     
     locals = locals || {};
     
-    let path = `${mailer.config.APP_ROOT || APP_ROOT}/app/server/notifications/${filename}`;
+    let path = `${mailer.config.APP_ROOT}/app/server/notifications/${filename}`;
     let view = Handlebars.compile(FS.readFileSync(path, 'utf8'));
     
     return view(locals);

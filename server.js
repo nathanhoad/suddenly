@@ -1,3 +1,4 @@
+const Path = require('path');
 const Hapi = require('hapi');
 const Inert = require('inert');
 const Vision = require('vision');
@@ -5,12 +6,14 @@ const Handlebars = require('handlebars');
 const requireTree = require('require-tree');
 const Log = require('./log');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 
 
 module.exports.routes = (server, config) => {
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     // Load up the routes
-    requireTree(`${config.APP_ROOT || APP_ROOT}/app/server/routes`, {
+    requireTree(`${app_root}/app/server/routes`, {
         filter: /-routes\.js$/,
         each: (routes) => {
             server.route(routes);
@@ -24,7 +27,7 @@ module.exports.routes = (server, config) => {
         path: '/assets/{param*}',
         handler: {
             directory: {
-                path: `${config.APP_ROOT || APP_ROOT}/build`
+                path: `${app_root}/build`
             }
         }
     });
@@ -35,7 +38,7 @@ module.exports.routes = (server, config) => {
             engines: {
                 html: Handlebars
             },
-            path: `${config.APP_ROOT || APP_ROOT}/build`,
+            path: `${app_root}/build`,
             layout: false,
             context: config.DEFAULT_CONTEXT || {}
         });
@@ -47,8 +50,10 @@ module.exports.routes = (server, config) => {
 
 
 module.exports.run = (config, args) => {
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
     return new Promise((resolve, reject) => {
-        let server = require(`${config.APP_ROOT || APP_ROOT}/app/server`);
+        let server = require(`${app_root}/app/server`);
         
         server.start((err) => {
             Log.info('server', 'Server started at', Log.bold(server.info.uri));

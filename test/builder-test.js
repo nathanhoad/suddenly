@@ -1,6 +1,5 @@
 const Lab = require('lab');
 const expect = require('code').expect;
-const Path = require('path');
 const FS = require('fs-extra');
 
 const lab = exports.lab = Lab.script();
@@ -92,10 +91,8 @@ lab.experiment('Builder', () => {
     
     lab.suite('run', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/build`, () => {
-                FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
-                    done();
-                });
+            FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
+                done();
             });
         });
         
@@ -106,6 +103,7 @@ lab.experiment('Builder', () => {
                 expect(server).to.contain(['listener']);
                 
                 server.assetServer.close();
+                server.watcher.close();
                 server.stop(() => {
                     done();
                 });
@@ -141,6 +139,7 @@ lab.experiment('Builder', () => {
                     expect(files.filter(f => f.match(/\.png$/)).length).to.equal(2);
                     
                     server.assetServer.close();
+                    server.watcher.close();
                     server.stop(() => {
                         done();
                     });

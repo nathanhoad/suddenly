@@ -4,7 +4,7 @@ const Inflect = require('i')();
 const Knex = require('knex');
 const Log = require ('./log');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 
 
 const Tasks = function () {};
@@ -12,10 +12,11 @@ const Tasks = function () {};
 
 Tasks.prototype.migrate = function (config) {
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var options = {
-        directory: `${config.APP_ROOT || APP_ROOT}/migrations`,
-        models: `${config.APP_ROOT || APP_ROOT}/app/server/models`,
+        directory: `${app_root}/migrations`,
+        models: `${app_root}/app/server/models`,
         tableName: 'schema_migrations'
     }
     
@@ -49,10 +50,11 @@ Tasks.prototype.migrate = function (config) {
     
 Tasks.prototype.rollback = function (config) {
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var options = {
-        directory: `${config.APP_ROOT || APP_ROOT}/migrations`,
-        models: `${config.APP_ROOT || APP_ROOT}/app/server/models`,
+        directory: `${app_root}/migrations`,
+        models: `${app_root}/app/server/models`,
         tableName: 'schema_migrations'
     }
     
@@ -86,10 +88,11 @@ Tasks.prototype.rollback = function (config) {
     
 Tasks.prototype.version = function (config) {
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var options = {
-        directory: `${config.APP_ROOT || APP_ROOT}/migrations`,
-        models: `${config.APP_ROOT || APP_ROOT}/app/server/models`,
+        directory: `${app_root}/migrations`,
+        models: `${app_root}/app/server/models`,
         tableName: 'schema_migrations'
     }
     
@@ -118,6 +121,7 @@ Tasks.prototype.schemaForTable = function (config, args) {
     args = args || [];
     
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     let table = args[0];
     
     let knex = Knex({
@@ -160,6 +164,7 @@ Tasks.prototype.schema = function (config, args) {
     args = args || [];
     
     let tasks = this;
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     let knex = Knex({
         client: 'pg',
