@@ -6,7 +6,7 @@ const Mailer = require('./mailer');
 const TestHelpers = require('./test-helpers');
 const Log = require('./log');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 
 
 function Suddenly () {
@@ -35,12 +35,12 @@ Suddenly.prototype.task = function (name, prerequisites, task, exit_after_comple
         prerequisites = [];
     }
     
-    suddenly.tasks[name] = function (config) {
+    suddenly.tasks[name] = function (config, args) {
         return Promise.all(prerequisites).then(() => {
-            if (exit_after_complete == false) {
-                return task(config, process.argv.slice(3));
+            if (exit_after_complete === false) {
+                return task(config, args);
             } else {
-                return task(config, process.argv.slice(3)).then(() => process.exit());
+                return task(config, args).then(() => process.exit());
             }
         });
     }
@@ -64,7 +64,9 @@ Suddenly.prototype.defaultTask = function (name, prerequisites, task, exit_after
 /*
     Execute any tasks that match the command
 */
-Suddenly.prototype.handleTasks = function (config) {
+Suddenly.prototype.handleTasks = function (config, argv) {
+    if (typeof argv == "undefined") argv = process.argv;
+    
     let suddenly = this;
     
     // Load in the default tasks
@@ -89,12 +91,12 @@ Suddenly.prototype.handleTasks = function (config) {
     suddenly.defaultTask('generate:resource', Generate.resource);
     suddenly.defaultTask('generate:notification', Generate.notification);
     
-    config.APP_ROOT = APP_ROOT;
+    if (!config.APP_ROOT) config.APP_ROOT = APP_ROOT;
     
-    let task_name = process.argv[2];
+    let task_name = argv[2];
     let task = suddenly.tasks[task_name];
     if (task) {
-        return task(config, process.argv.slice(3));
+        return task(config, argv.slice(3));
     } else {
         Log.error(task_name, Log.bold(task_name), 'is not defined');
         Log.error(task_name, Log.gray('You can define it in'), Log.gray.bold('bin/suddenly'));
