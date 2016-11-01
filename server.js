@@ -1,9 +1,9 @@
 const Path = require('path');
+const FS = require('fs-extra');
 const Hapi = require('hapi');
 const Inert = require('inert');
 const Vision = require('vision');
 const Handlebars = require('handlebars');
-const requireTree = require('require-tree');
 const Log = require('./log');
 
 const APP_ROOT = require('app-root-path').toString();
@@ -12,11 +12,14 @@ const APP_ROOT = require('app-root-path').toString();
 module.exports.routes = (server, config) => {
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
-    // Load up the routes
-    requireTree(`${app_root}/app/server/routes`, {
-        filter: /-routes\.js$/,
-        each: (routes) => {
-            server.route(routes);
+    // Load up the routes, if any
+    let routes_path = `${app_root}/app/server/routes`;
+    FS.ensureDirSync(routes_path);
+    FS.readdirSync(routes_path).filter(p => p.match(/-routes\.js$/)).forEach((file) => {
+        try {
+            server.route(require(`${routes_path}/${file}`));
+        } catch (err) {
+            // The route didn't load...
         }
     });
 

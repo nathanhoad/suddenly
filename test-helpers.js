@@ -1,7 +1,6 @@
 const Module = require('module');
 
 const _ = require('lodash');
-const Values = require('test-values');
 const configureStore = require('redux-mock-store').default;
 const Thunk = require('redux-thunk').default;
 const Gimmea = require('gimmea');

@@ -1,12 +1,11 @@
 {
   "name": "suddenly",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "The tools that power Suddenly apps",
   "main": "index.js",
   "scripts": {
     "lab": "NODE_ENV=test node node_modules/.bin/lab --pattern \"\\-test\" --ignore __core-js_shared__,fetch,Headers,Request,Response,addresses -T node_modules/lab-babel --sourcemaps",
-    "test": "npm run lab test",
-    "prepublish": "npm test"
+    "test": "npm run lab test"
   },
   "keywords": [
     "hapi",
@@ -54,9 +53,7 @@
     "redux": "^3.6.0",
     "redux-mock-store": "^1.2.1",
     "redux-thunk": "^2.1.0",
-    "require-tree": "^1.1.1",
     "style-loader": "^0.13.1",
-    "test-values": "^2.0.5",
     "vision": "^4.1.0",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.15.1"
