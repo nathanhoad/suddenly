@@ -1,5 +1,7 @@
 # Suddenly
 
+[![CircleCI](https://circleci.com/gh/nathanhoad/suddenly.svg?style=svg)](https://circleci.com/gh/nathanhoad/suddenly)
+
 A bunch of tools to help with Suddenly apps
 
 
