@@ -1,7 +1,6 @@
 const Path = require('path');
 const FS = require('fs-extra');
 const Webpack = require('webpack');
-const WebpackDevServer = require('webpack-dev-server');
 const Log = require('./log');
 
 const APP_ROOT = require('app-root-path').toString();
@@ -93,6 +92,8 @@ Tasks.build = function (config, args) {
     
     
 Tasks.run = function (config, args) {
+    const WebpackDevServer = require('webpack-dev-server');
+    
     let tasks = this;
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
