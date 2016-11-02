@@ -3,7 +3,6 @@ const Builder = require('./builder');
 const Database = require('./database');
 const Server = require('./server');
 const Mailer = require('./mailer');
-const TestHelpers = require('./test-helpers');
 const Log = require('./log');
 
 const APP_ROOT = require('app-root-path').toString();
@@ -15,12 +14,10 @@ function Suddenly () {
     this.tasks = {};
 }
 
+Suddenly.prototype.Log = Log;
 
 Suddenly.prototype.routes = Server.routes;
 Suddenly.prototype.mailer = Mailer.create;
-Suddenly.prototype.testHelpers = TestHelpers;
-Suddenly.prototype.Log = Log;
-
 
 /*
     Register a command line task

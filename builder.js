@@ -11,13 +11,12 @@ const DEV_SERVER_PORT = 8080;
 const defaultWebpackConfig = require('./templates/webpack.config');
 
 
-const Tasks = function () {};
+const Tasks = {};
 
 
-Tasks.prototype.clean = function (config) {
+Tasks.clean = function (config) {
     config = config || {};
     
-    let tasks = this;
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     return new Promise((resolve, reject) => {
@@ -31,8 +30,7 @@ Tasks.prototype.clean = function (config) {
 };
 
 
-Tasks.prototype.build = function (config, args) {
-    let tasks = this;
+Tasks.build = function (config, args) {
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     config = config || {};
@@ -94,7 +92,7 @@ Tasks.prototype.build = function (config, args) {
 };
     
     
-Tasks.prototype.run = function (config, args) {
+Tasks.run = function (config, args) {
     let tasks = this;
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
@@ -162,16 +160,14 @@ Tasks.prototype.run = function (config, args) {
 };
 
 
-Tasks.prototype.buildAndRun = function (config) {
-    let tasks = this;
-    
-    return tasks.clean().then(() => {
-        return tasks.build(config, ['--hot']).then(() => {
-            return tasks.run(config);
+Tasks.buildAndRun = function (config) {
+    return Tasks.clean().then(() => {
+        return Tasks.build(config, ['--hot']).then(() => {
+            return Tasks.run(config);
         });
     });
 };
 
 
-module.exports = new Tasks();
+module.exports = Tasks;
 module.exports.DEFAULT_WEBPACK_CONFIG = defaultWebpackConfig();

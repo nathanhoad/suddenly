@@ -24,10 +24,8 @@ lab.experiment('Builder', () => {
     
     lab.suite('clean', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/build`, () => {
-                FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
-                    done();
-                });
+            FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
+                done();
             });
         });
         
@@ -59,10 +57,8 @@ lab.experiment('Builder', () => {
     
     lab.suite('build', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/build`, () => {
-                FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
-                    done();
-                });
+            FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
+                done();
             });
         });
         
@@ -117,15 +113,13 @@ lab.experiment('Builder', () => {
     
     lab.suite('buildAndRun', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/build`, () => {
-                FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
-                    done();
-                });
+            FS.copy(`${__dirname}/builder`, `${__dirname}/../tmp`, (err) => {
+                done();
             });
         });
         
         
-        lab.test('it can build and then run a dev server', (done) => {
+        lab.test('it can build and then run a dev server', { timeout: 5000 }, (done) => {
             Builder.buildAndRun(config).then((server) => {
                 expect(server).to.be.an.object();
                 expect(server).to.contain(['listener']);
