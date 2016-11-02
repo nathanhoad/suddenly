@@ -31,11 +31,8 @@ lab.experiment('Builder', () => {
         
         
         lab.test('cleans the build directory', (done) => {
-            // Create a file in the build dir
-            FS.closeSync(FS.openSync(`${__dirname}/../tmp/build/client.js`, 'w'));
-            
             // Check that there are things in the build dir
-            FS.readFile(`${__dirname}/../tmp/build/client.js`, (err, file) => {
+            FS.readFile(`${__dirname}/../tmp/build/thing-to-be-cleaned.txt`, (err, file) => {
                 expect(err).to.be.null();
                 
                 Builder.clean(config).then(() => {
@@ -69,7 +66,7 @@ lab.experiment('Builder', () => {
                 
                 FS.readdir(`${__dirname}/../tmp/build`, (err, files) => {
                     expect(files).to.be.an.array();
-                    expect(files.length).to.equal(4);
+                    expect(files.length).to.equal(5);
                     
                     expect(files.filter(f => f.match(/\.js$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.html$/)).length).to.equal(1);
@@ -126,7 +123,7 @@ lab.experiment('Builder', () => {
                 
                 FS.readdir(`${__dirname}/../tmp/build`, (err, files) => {
                     expect(files).to.be.an.array();
-                    expect(files.length).to.equal(4);
+                    expect(files.length).to.equal(5);
                     
                     expect(files.filter(f => f.match(/\.js$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.html$/)).length).to.equal(1);
