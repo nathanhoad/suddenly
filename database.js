@@ -26,18 +26,18 @@ const Tasks = {
                 let files = [];
                 
                 if (results[1].length == 0) {
-                    Log.muted('db:migrate', 'No migrations to run');
+                    Log.muted('No migrations to run');
                 } else {
-                    Log.info('db:migrate', Log.bold(`Migrating group ${results[0]}`));
+                    Log.info(Log.bold(`Migrating group ${results[0]}`));
                     results[1].forEach((migration_path) => {
-                        Log.info('migrate', Log.gray(migration_path.replace(Path.dirname(options.directory) + '/migrations/', '')));
+                        Log.info(Log.gray(migration_path.replace(Path.dirname(options.directory) + '/migrations/', '')));
                         files.push(migration_path);
                     });
                 }
                 return resolve(files);
                 
             }).catch((err) => {
-                Log.error('db:migrate', err);
+                Log.error(err);
                 return reject(err);
             });
         });
@@ -63,18 +63,18 @@ const Tasks = {
                 let files = [];
                 
                 if (results[1].length == 0) {
-                    Log.muted('db:rollback', 'Nothing to roll back');
+                    Log.muted('Nothing to roll back');
                 } else {
-                    Log.warning('db:rollback', Log.bold(`Rolling back group ${results[0]}`));
+                    Log.warning(Log.bold(`Rolling back group ${results[0]}`));
                     results[1].forEach((migration_path) => {
-                        Log.warning('db:rollback', Log.gray(migration_path.replace(Path.dirname(options.directory) + '/migrations/', '')));
+                        Log.warning(Log.gray(migration_path.replace(Path.dirname(options.directory) + '/migrations/', '')));
                         files.push(migration_path);
                     });
                 }
                 return resolve(files);
                 
             }).catch((err) => {
-                Log.error('db:rollback', err);
+                Log.error(err);
                 return reject(err);
             });
         });
@@ -99,9 +99,9 @@ const Tasks = {
             knex.migrate.currentVersion(options).then((version) => {
                 if (version == 'none') {
                     version = null;
-                    Log.muted('db:version', 'No migrations have been run');
+                    Log.muted('No migrations have been run');
                 } else {
-                    Log.info('db:version', 'Database is at version', Log.bold(version));
+                    Log.info('Database is at version', Log.bold(version));
                 }
                 
                 return resolve(version);
@@ -167,10 +167,10 @@ const Tasks = {
         return new Promise((resolve, reject) => {
             if (table) {
                 return Tasks.schemaForTable(config, [table]).then((schema) => {
-                    Log.info('db:schema', Log.bold(schema.table.toUpperCase()));
+                    Log.info(Log.bold(schema.table.toUpperCase()));
                     
                     schema.columns.forEach((column) => {
-                        Log.info('db:schema', `${column.name}:`, Log.yellow(column.type), Log.gray(column.meta));
+                        Log.info(`${column.name}:`, Log.yellow(column.type), Log.gray(column.meta));
                     });
                     
                     return resolve([schema]);
@@ -189,14 +189,14 @@ const Tasks = {
                     // return resolve(Promise.all(queries));
                     return Promise.all(queries).then((schemas) => {
                         schemas.forEach((schema, index) => {
-                            Log.info('db:schema', Log.bold(schema.table.toUpperCase()));
+                            Log.info(Log.bold(schema.table.toUpperCase()));
                             
                             schema.columns.forEach((column) => {
-                                Log.info('db:schema', `${column.name}:`, Log.yellow(column.type), Log.gray(column.meta));
+                                Log.info(`${column.name}:`, Log.yellow(column.type), Log.gray(column.meta));
                             });
                             
                             if (index < schemas.length - 1) {
-                                Log.info('db:schema', '');
+                                Log.info('');
                             }
                         });
                         

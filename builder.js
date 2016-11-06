@@ -22,7 +22,7 @@ Tasks.clean = function (config) {
         return FS.emptyDir(`${app_root}/build`, (err) => {
             if (err) return reject(err);
             
-            Log.info('clean', 'Cleaned build directory');
+            Log.info('Cleaned build directory');
             resolve();
         });
     });
@@ -44,14 +44,14 @@ Tasks.build = function (config, args) {
     
     return new Promise ((resolve, reject) => {
         if (args.includes('--hot') || args.includes('hot')) {
-            Log.info('build', "Building with", Log.bold.magenta("Hot Reload"));
+            Log.info("Building with", Log.bold.magenta("Hot Reload"));
             Object.keys(webpack_config.entry).forEach((entry) => {
                 webpack_config.entry[entry].unshift(`webpack-dev-server/client?http://localhost:${DEV_SERVER_PORT}`, "webpack/hot/dev-server");
             });
             webpack_config.output.publicPath = `http://localhost:${DEV_SERVER_PORT}/assets/`;
             webpack_config.plugins.push(new Webpack.HotModuleReplacementPlugin());
         } else {
-            Log.info('build', "Building");
+            Log.info("Building");
         }
         
         let compiler = Webpack(webpack_config);
@@ -59,7 +59,7 @@ Tasks.build = function (config, args) {
             compiler.apply(new Webpack.ProgressPlugin((percent, message) => {
                 Log.clearLine();
                 if (percent < 1) {
-                    Log.progressInfo('build', `${Math.floor(percent * 100)}%`, Log.gray(`(${message})`));
+                    Log.progressInfo(`${Math.floor(percent * 100)}%`, Log.gray(`(${message})`));
                 }
             }));
         }
@@ -71,18 +71,18 @@ Tasks.build = function (config, args) {
             
             if (stats.errors.length > 0) {
                 stats.errors.forEach((error) => {
-                    Log.error('build', error);
+                    Log.error(error);
                 });
                 return reject(stats.errors);
             }
             if (stats.warnings.length > 0) {
                 stats.warnings.forEach((warning) => {
-                    Log.warning('build', warning);
+                    Log.warning(warning);
                 });
             }
             
             if (stats.errors.length == 0 && stats.warnings.length == 0) {
-                Log.info('build', 'Build finished in', Log.bold(`${Math.round(stats.time / 1000)} seconds`));
+                Log.info('Build finished in', Log.bold(`${Math.round(stats.time / 1000)} seconds`));
             }
             
             return resolve(stats);
@@ -125,7 +125,7 @@ Tasks.run = function (config, args) {
                     
                     server.start(() => {
                         let now = new Date();
-                        Log.notice('hot', 'Server restarted', Log.gray(`at ${now.toTimeString()}`));
+                        Log.notice('Server restarted', Log.gray(`at ${now.toTimeString()}`));
                     });
                 });
             });
@@ -133,7 +133,7 @@ Tasks.run = function (config, args) {
             compiler.apply(new Webpack.ProgressPlugin((percent, message) => {
                 if (percent == 1) {
                     let now = new Date();
-                    Log.notice('hot', 'Latest build ready', Log.gray(`at ${now.toTimeString()}`));
+                    Log.notice('Latest build ready', Log.gray(`at ${now.toTimeString()}`));
                 }
             }));
         }
@@ -148,8 +148,8 @@ Tasks.run = function (config, args) {
             if (err) reject(err);
             
             server.start(() => {
-                Log.info('run', 'Server started at http://localhost:5000');
-                Log.info('run', Log.gray('Press Ctrl+C to stop'));
+                Log.info('Server started at http://localhost:5000');
+                Log.info(Log.gray('Press Ctrl+C to stop'));
                 
                 // Attach a copy of the asset server
                 server.assetServer = assetServer;

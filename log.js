@@ -18,16 +18,7 @@ Log._log = function () {
     if (args.length < 2) return;
     
     let colour = args[0];
-    let action;
-    let message;
-    
-    if (args.length == 2) {
-        action = new Date();
-        message = args[1];
-    } else {
-        action = args[1];
-        message = args.slice(2).join(' ');
-    }
+    let message = args.slice(1).join(' ');
     
     // Make the whole message the colour
     if (colour.match(/!$/)) {
@@ -38,9 +29,9 @@ Log._log = function () {
     if (colour.match(/~$/)) {
         // This is a temporary log line
         colour = colour.replace(/~$/, '');
-        process.stdout.write(Log[colour](`[${action}]`) + ' ' + message + "\r");
+        process.stdout.write(Log[colour]('>') + ' ' + message + "\r");
     } else {
-        console.log(Log[colour](`[${action}]`), message);
+        console.log(Log[colour]('>'), message);
     }
 }
 

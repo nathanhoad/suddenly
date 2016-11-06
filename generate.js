@@ -51,7 +51,7 @@ Generate.prototype.migration = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:migration', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -66,10 +66,10 @@ Generate.prototype.migration = function (config, args) {
         knex.migrate.make(Inflect.dasherize(name), options).then((migration_path) => {
             saveTemplate('migration.js', {}, migration_path);
             // Log.info('generate:migration', 'Created migration', Log.bold(justFilename(migration_path, options.directory)));
-            Log.info("generate:migration", 'Created migration', Log.bold(justFilename(migration_path, options.directory)));
+            Log.info('Created migration', Log.bold(justFilename(migration_path, options.directory)));
             return resolve([migration_path]);
         }).catch((err) => {
-            Log.error("generate:migration", err.message);
+            Log.error(err.message);
             return reject(err);
         });
     });
@@ -84,7 +84,7 @@ Generate.prototype.model = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:model', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -104,36 +104,36 @@ Generate.prototype.model = function (config, args) {
         let model_path = `${models_path}/${Inflect.dasherize(Inflect.singularize(table_name))}.js`;
         
         if (args.includes('no-migration')) {
-            Log.muted('generate:model', 'Skipped creating migration');
+            Log.muted('Skipped creating migration');
             
             if (args.includes('no-model')) {
-                Log.muted('generate:model', 'Skipped creating model');
+                Log.muted('Skipped creating model');
                 return resolve([]); // Not sure why anyone would do this but whatever
             }
             
             saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-            Log.info('generate:model', "Created model", Log.green(justFilename(model_path, models_path)));
+            Log.info("Created model", Log.green(justFilename(model_path, models_path)));
             files = [model_path];
             return resolve(files);
             
         } else {
             knex.migrate.make(`create-${Inflect.dasherize(table_name)}`, options).then((migration_path) => {
                 saveTemplate('model-migration.js', { table: table_name }, migration_path);
-                Log.info('generate:model', 'Created migration', Log.green(justFilename(migration_path, options.directory)));
+                Log.info('Created migration', Log.green(justFilename(migration_path, options.directory)));
                 files.push(migration_path);
                 
                 if (args.includes('no-model')) {
-                    Log.muted('generate:model', 'Skipped creating model');
+                    Log.muted('Skipped creating model');
                 } else {
                     saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-                    Log.info('generate:model', "Created model", Log.green(justFilename(model_path, models_path)));
+                    Log.info("Created model", Log.green(justFilename(model_path, models_path)));
                     files.push(model_path);
                 }
                 
                 return resolve(files);
                 
             }).catch(err => {
-                console.log(Log.red(err.message));
+                Log.error(err.message);
                 return reject(err);
             });
         }
@@ -149,7 +149,7 @@ Generate.prototype.routes = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:routes', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -165,16 +165,16 @@ Generate.prototype.routes = function (config, args) {
         let route = Inflect.dasherize(Inflect.pluralize(name));
         let route_path = `${routes_path}/${route}-routes.js`;
         saveTemplate('routes.js', { route: route }, route_path);
-        Log.info('generate:routes', "Created routes", Log.green(justFilename(route_path, routes_path)));
+        Log.info("Created routes", Log.green(justFilename(route_path, routes_path)));
         files.push(route_path);
         
         if (args.includes('no-tests')) {
-            Log.muted('generate:routes', 'Skipped creating tests');
+            Log.muted('Skipped creating tests');
         } else {
             // Generate the tests
             let route_test_path = `${routes_tests_path}/${route}-routes-test.js`;
             saveTemplate('routes-test.js', { route: route }, route_test_path);
-            Log.info('generate:routes', "Created test", Log.green(justFilename(route_test_path, routes_tests_path)));
+            Log.info("Created test", Log.green(justFilename(route_test_path, routes_tests_path)));
             files.push(route_test_path);
         }
         
@@ -191,7 +191,7 @@ Generate.prototype.resource = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:resource', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -203,7 +203,7 @@ Generate.prototype.resource = function (config, args) {
         let resource = Inflect.dasherize(name);
         let resource_path = `${resources_path}/${resource}-resource.js`;
         saveTemplate('resource.js', { model: Inflect.underscore(name) }, resource_path);
-        Log.info('generate:resource', "Created resource", Log.green(justFilename(resource_path, resources_path)));
+        Log.info("Created resource", Log.green(justFilename(resource_path, resources_path)));
         files.push(resource_path);
         
         return resolve(files);
@@ -219,7 +219,7 @@ Generate.prototype.notification = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:notification', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -236,14 +236,14 @@ Generate.prototype.notification = function (config, args) {
         let file_contents = FS.readFileSync(notification_js_path, 'utf8');
         file_contents += `\n\nmodule.exports.${method} = (user, callback) => {\n\tMailer.${method}(user.get('email'), '${method}', { user: user.toJSON() }, callback);\n};`;
         FS.writeFileSync(notification_js_path, file_contents);
-        Log.info('generate:notification', "Updated notifications/index.js");
+        Log.info("Updated notifications/index.js");
         files.push(notification_js_path);
         
         // Save the email template
         let notification = Inflect.dasherize(Inflect.pluralize(name));
         let notification_path = `${notifications_path}/${notification}.html`;
         saveTemplate('notification.html', { notification: notification }, notification_path);
-        Log.info('generate:notification', "Created a new notification", Log.green(justFilename(notification_path, notifications_path)));
+        Log.info("Created a new notification", Log.green(justFilename(notification_path, notifications_path)));
         files.push(notification_path);
         
         return resolve(files);
@@ -259,7 +259,7 @@ Generate.prototype.actions = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:actions', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -282,12 +282,12 @@ Generate.prototype.actions = function (config, args) {
             single_lowercase: Inflect.underscore(name).toLowerCase(),
             single_class: Inflect.camelize(name),
         }, action_path);
-        Log.info('generate:actions', "Created actions", Log.green(justFilename(action_path, actions_path)));
+        Log.info("Created actions", Log.green(justFilename(action_path, actions_path)));
         files.push(action_path);
         
         // test
         if (args.includes('no-tests')) {
-            Log.muted('generate:actions', 'Skipped creating tests');
+            Log.muted('Skipped creating tests');
         } else {
             let test_path = `${tests_path}/${action}-actions-test.js`;
             saveTemplate('actions-test.js', {
@@ -298,7 +298,7 @@ Generate.prototype.actions = function (config, args) {
                 single_lowercase: Inflect.underscore(name).toLowerCase(),
                 single_class: Inflect.camelize(name)
             }, test_path);
-            Log.info('generate:actions', "Created test", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created test", Log.green(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -315,7 +315,7 @@ Generate.prototype.reducer = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:reducer', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -338,7 +338,7 @@ Generate.prototype.reducer = function (config, args) {
             single_lowercase: Inflect.underscore(name).toLowerCase(),
             single_class: Inflect.camelize(name)
         }, reducer_path);
-        Log.info('generate:reducer', "Created reducer", Log.green(justFilename(reducer_path, reducers_path)));
+        Log.info("Created reducer", Log.green(justFilename(reducer_path, reducers_path)));
         files.push(reducer_path);
         
         // Add the reduder to the index
@@ -356,7 +356,7 @@ Generate.prototype.reducer = function (config, args) {
         
         // Create tests
         if (args.includes('no-tests')) {
-            Log.muted('generate:reducer', 'Skipped creating tests');
+            Log.muted('Skipped creating tests');
         } else {
             let test_path = `${tests_path}/${reducer}-reducer-test.js`;
             saveTemplate('reducer-test.js', {
@@ -367,7 +367,7 @@ Generate.prototype.reducer = function (config, args) {
                 single_lowercase: Inflect.underscore(name).toLowerCase(),
                 single_class: Inflect.camelize(name)
             }, test_path);
-            Log.info('generate:reducer', "Created tests", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created tests", Log.green(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -406,7 +406,7 @@ Generate.prototype.component = function (config, args) {
             class_name: Inflect.classify(Inflect.underscore(name)),
             file_name: Inflect.dasherize(name)
         }, component_path);
-        Log.info('generate:component', (connected ? "Created connected component" : "Created component"), Log.green(justFilename(component_path, components_path)));
+        Log.info((connected ? "Created connected component" : "Created component"), Log.green(justFilename(component_path, components_path)));
         files.push(component_path);
         
         // Stylesheet
@@ -415,7 +415,7 @@ Generate.prototype.component = function (config, args) {
         } else {
             let style_path = `${styles_path}/${component}.css`;
             saveTemplate('style.css', {}, style_path);
-            Log.info('generate:component', "Created style", Log.green(justFilename(style_path, styles_path)));
+            Log.info("Created style", Log.green(justFilename(style_path, styles_path)));
             files.push(style_path);
         }
         
@@ -428,7 +428,7 @@ Generate.prototype.component = function (config, args) {
                 class_name: Inflect.classify(Inflect.underscore(name)),
                 file_name: Inflect.dasherize(name)
             }, test_path);
-            Log.info('generate:component', "Created tests", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created tests", Log.green(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -445,7 +445,7 @@ Generate.prototype.style = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:component', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -458,7 +458,7 @@ Generate.prototype.style = function (config, args) {
         let component = Inflect.dasherize(name);
         let style_path = `${styles_path}/${component}.css`;
         saveTemplate('style.css', {}, style_path);
-        Log.info('generate:component', "Created style", Log.green(justFilename(style_path, styles_path)));
+        Log.info("Created style", Log.green(justFilename(style_path, styles_path)));
         files.push(style_path);
         
         resolve(files);

@@ -59,7 +59,7 @@ module.exports.run = (config, args) => {
         let server = require(`${app_root}/app/server`);
         
         server.start((err) => {
-            Log.info('server', 'Server started at', Log.bold(server.info.uri));
+            Log.info('Server started at', Log.bold(server.info.uri));
             resolve(server);
         });
     });
