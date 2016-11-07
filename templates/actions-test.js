@@ -1,6 +1,6 @@
 const Lab = require('lab');
 const Nock = require('nock');
-const Helpers = require('../helpers');
+const Testing = require('../testing');
 const Immutable = require('immutable');
 const Config = require('app/config/public');
 const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE}}-resource');

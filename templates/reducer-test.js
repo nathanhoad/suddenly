@@ -1,6 +1,6 @@
 const Lab = require('lab');
 const Immutable = require('immutable');
-const Helpers = require('../helpers');
+const Testing = require('../testing');
 const _ = require('lodash');
 
 const { expect } = require('code');

@@ -46,7 +46,7 @@ Log.progressInfo = function () {
 
 
 Log.error = function () {
-    return Log._log('red', ...arguments);
+    return Log._log('red!', ...arguments);
 }
 
 

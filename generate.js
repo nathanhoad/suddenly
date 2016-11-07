@@ -119,14 +119,14 @@ Generate.prototype.model = function (config, args) {
         } else {
             knex.migrate.make(`create-${Inflect.dasherize(table_name)}`, options).then((migration_path) => {
                 saveTemplate('model-migration.js', { table: table_name }, migration_path);
-                Log.info('Created migration', Log.green(justFilename(migration_path, options.directory)));
+                Log.info('Created migration', Log.bold(justFilename(migration_path, options.directory)));
                 files.push(migration_path);
                 
                 if (args.includes('no-model')) {
                     Log.muted('Skipped creating model');
                 } else {
                     saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-                    Log.info("Created model", Log.green(justFilename(model_path, models_path)));
+                    Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
                     files.push(model_path);
                 }
                 
@@ -165,7 +165,7 @@ Generate.prototype.routes = function (config, args) {
         let route = Inflect.dasherize(Inflect.pluralize(name));
         let route_path = `${routes_path}/${route}-routes.js`;
         saveTemplate('routes.js', { route: route }, route_path);
-        Log.info("Created routes", Log.green(justFilename(route_path, routes_path)));
+        Log.info("Created routes", Log.bold(justFilename(route_path, routes_path)));
         files.push(route_path);
         
         if (args.includes('no-tests')) {
@@ -174,7 +174,7 @@ Generate.prototype.routes = function (config, args) {
             // Generate the tests
             let route_test_path = `${routes_tests_path}/${route}-routes-test.js`;
             saveTemplate('routes-test.js', { route: route }, route_test_path);
-            Log.info("Created test", Log.green(justFilename(route_test_path, routes_tests_path)));
+            Log.info("Created test", Log.bold(justFilename(route_test_path, routes_tests_path)));
             files.push(route_test_path);
         }
         
@@ -203,7 +203,7 @@ Generate.prototype.resource = function (config, args) {
         let resource = Inflect.dasherize(name);
         let resource_path = `${resources_path}/${resource}-resource.js`;
         saveTemplate('resource.js', { model: Inflect.underscore(name) }, resource_path);
-        Log.info("Created resource", Log.green(justFilename(resource_path, resources_path)));
+        Log.info("Created resource", Log.bold(justFilename(resource_path, resources_path)));
         files.push(resource_path);
         
         return resolve(files);
@@ -243,7 +243,7 @@ Generate.prototype.notification = function (config, args) {
         let notification = Inflect.dasherize(Inflect.pluralize(name));
         let notification_path = `${notifications_path}/${notification}.html`;
         saveTemplate('notification.html', { notification: notification }, notification_path);
-        Log.info("Created a new notification", Log.green(justFilename(notification_path, notifications_path)));
+        Log.info("Created a new notification", Log.bold(justFilename(notification_path, notifications_path)));
         files.push(notification_path);
         
         return resolve(files);
@@ -282,7 +282,7 @@ Generate.prototype.actions = function (config, args) {
             single_lowercase: Inflect.underscore(name).toLowerCase(),
             single_class: Inflect.camelize(name),
         }, action_path);
-        Log.info("Created actions", Log.green(justFilename(action_path, actions_path)));
+        Log.info("Created actions", Log.bold(justFilename(action_path, actions_path)));
         files.push(action_path);
         
         // test
@@ -298,7 +298,7 @@ Generate.prototype.actions = function (config, args) {
                 single_lowercase: Inflect.underscore(name).toLowerCase(),
                 single_class: Inflect.camelize(name)
             }, test_path);
-            Log.info("Created test", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created test", Log.bold(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -338,7 +338,7 @@ Generate.prototype.reducer = function (config, args) {
             single_lowercase: Inflect.underscore(name).toLowerCase(),
             single_class: Inflect.camelize(name)
         }, reducer_path);
-        Log.info("Created reducer", Log.green(justFilename(reducer_path, reducers_path)));
+        Log.info("Created reducer", Log.bold(justFilename(reducer_path, reducers_path)));
         files.push(reducer_path);
         
         // Add the reduder to the index
@@ -367,7 +367,7 @@ Generate.prototype.reducer = function (config, args) {
                 single_lowercase: Inflect.underscore(name).toLowerCase(),
                 single_class: Inflect.camelize(name)
             }, test_path);
-            Log.info("Created tests", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -384,7 +384,7 @@ Generate.prototype.component = function (config, args) {
     
     return new Promise((resolve, reject) => {
         if (args.length == 0) {
-            Log.error('generate:component', 'No name specified');
+            Log.error('No name specified');
             return reject(new Error('No name specified'));
         }
         
@@ -415,7 +415,7 @@ Generate.prototype.component = function (config, args) {
         } else {
             let style_path = `${styles_path}/${component}.css`;
             saveTemplate('style.css', {}, style_path);
-            Log.info("Created style", Log.green(justFilename(style_path, styles_path)));
+            Log.info("Created style", Log.bold(justFilename(style_path, styles_path)));
             files.push(style_path);
         }
         
@@ -428,7 +428,7 @@ Generate.prototype.component = function (config, args) {
                 class_name: Inflect.classify(Inflect.underscore(name)),
                 file_name: Inflect.dasherize(name)
             }, test_path);
-            Log.info("Created tests", Log.green(justFilename(test_path, tests_path)));
+            Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
             files.push(test_path);
         }
         
@@ -458,7 +458,7 @@ Generate.prototype.style = function (config, args) {
         let component = Inflect.dasherize(name);
         let style_path = `${styles_path}/${component}.css`;
         saveTemplate('style.css', {}, style_path);
-        Log.info("Created style", Log.green(justFilename(style_path, styles_path)));
+        Log.info("Created style", Log.bold(justFilename(style_path, styles_path)));
         files.push(style_path);
         
         resolve(files);

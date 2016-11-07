@@ -1,6 +1,6 @@
 const Lab = require('lab');
 const Server = require('app/server');
-const Helpers = require('../helpers');
+const Testing = require('../testing');
 
 const expect = require('code').expect;
 

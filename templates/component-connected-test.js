@@ -3,7 +3,7 @@ const React = require('react');
 const { shallow } = require('enzyme');
 const Sinon = require('sinon');
 
-const Helpers = require('../helpers');
+const Testing = require('../testing');
 
 const expect = require('code').expect;
 const lab = exports.lab = Lab.script();
