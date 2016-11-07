@@ -18,20 +18,20 @@ Log._log = function () {
     if (args.length < 2) return;
     
     let colour = args[0];
-    let message = args.slice(1).join(' ');
+    let message = args.slice(1);
     
     // Make the whole message the colour
     if (colour.match(/!$/)) {
         colour = colour.replace(/!$/, '');
-        message = Log[colour](message);
+        message = [Log[colour](...message)];
     }
     
     if (colour.match(/~$/)) {
         // This is a temporary log line
         colour = colour.replace(/~$/, '');
-        process.stdout.write(Log[colour]('>') + ' ' + message + "\r");
+        process.stdout.write(Log[colour]('>') + ' ' + message.join(' ') + "\r");
     } else {
-        console.log(Log[colour]('>'), message);
+        console.log(Log[colour]('>'), ...message);
     }
 }
 

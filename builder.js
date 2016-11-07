@@ -5,7 +5,7 @@ const Log = require('./log');
 
 const APP_ROOT = require('app-root-path').toString();
 
-const DEV_SERVER_PORT = 8080;
+const DEV_SERVER_PORT = 5050;
 
 const defaultWebpackConfig = require('./templates/webpack.config');
 
@@ -22,7 +22,7 @@ Tasks.clean = function (config) {
         return FS.emptyDir(`${app_root}/build`, (err) => {
             if (err) return reject(err);
             
-            Log.info('Cleaned build directory');
+            Log.info('Build directory is now empty');
             resolve();
         });
     });
@@ -48,7 +48,7 @@ Tasks.build = function (config, args) {
             Object.keys(webpack_config.entry).forEach((entry) => {
                 webpack_config.entry[entry].unshift(`webpack-dev-server/client?http://localhost:${DEV_SERVER_PORT}`, "webpack/hot/dev-server");
             });
-            webpack_config.output.publicPath = `http://localhost:${DEV_SERVER_PORT}/assets/`;
+            webpack_config.output.publicPath = `http://localhost:${DEV_SERVER_PORT}/`;
             webpack_config.plugins.push(new Webpack.HotModuleReplacementPlugin());
         } else {
             Log.info("Building");
@@ -141,7 +141,7 @@ Tasks.run = function (config, args) {
         var assetServer = new WebpackDevServer(compiler, {
             hot: true,
             contentBase: `${app_root}/build/`,
-            publicPath: '/assets/',
+            publicPath: '/',
             noInfo: true
         });
         assetServer.listen(DEV_SERVER_PORT, "localhost", (err) => {

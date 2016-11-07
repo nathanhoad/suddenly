@@ -71,6 +71,7 @@ Suddenly.prototype.handleTasks = function (config, argv) {
 
     suddenly.defaultTask('build', Builder.build);
     suddenly.defaultTask('build:run', Builder.buildAndRun, false);
+    suddenly.defaultTask('build:clean', Builder.clean);
 
     suddenly.defaultTask('db:migrate', Database.migrate);
     suddenly.defaultTask('db:rollback', Database.rollback);
