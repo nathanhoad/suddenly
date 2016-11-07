@@ -39,7 +39,7 @@ module.exports = (config) => {
                         ['style', 'css?modules&camelCase&sourcemaps&localIdentName=[name]__[local]__[hash:base64:5]', 'postcss'].join('!')
                 },
                 {
-                    test: /\.(jpg|png|gif)$/,
+                    test: /\.(jpg|png|gif|mp4|m4v|flv|mp3|wav|m4a)$/,
                     loader: 'file?name=[name]-[hash].[ext]'
                 }
             ],
