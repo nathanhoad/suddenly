@@ -10,6 +10,43 @@ const DEV_SERVER_PORT = 5050;
 const defaultWebpackConfig = require('./templates/webpack.config');
 
 
+function flags (args) {
+    args = args || [];
+    return args.map(arg => arg.replace(/^\-\-/, ''));
+}
+
+
+// Load the webpack config and apply hot reload options if needed
+function webpackConfig (config, args, logged) {
+    args = flags(args);
+    
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+    
+    var webpack_config;
+    try {
+        webpack_config = require(`${app_root}/webpack.config`);
+    } catch (e) {
+        webpack_config = defaultWebpackConfig(config);
+    }
+    
+    if (args.includes('hot')) {
+        if (logged) {
+            Log.info("Building with", Log.bold.magenta("Hot Reload"));
+        }
+        Object.keys(webpack_config.entry).forEach((entry) => {
+            webpack_config.entry[entry].unshift(`webpack-dev-server/client?http://localhost:${DEV_SERVER_PORT}`, "webpack/hot/dev-server");
+        });
+        webpack_config.output.publicPath = `http://localhost:${DEV_SERVER_PORT}/assets/`;
+        webpack_config.plugins.push(new Webpack.HotModuleReplacementPlugin());
+    } else if (logged){
+        Log.info("Building");
+    }
+    
+    return webpack_config;
+}
+
+
+
 const Tasks = {};
 
 
@@ -30,29 +67,13 @@ Tasks.clean = function (config) {
 
 
 Tasks.build = function (config, args) {
+    config = config || {};
+    args = flags(args);
+    
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
-    config = config || {};
-    args = args || [];
-    
-    var webpack_config;
-    try {
-        webpack_config = require(`${app_root}/webpack.config`);
-    } catch (e) {
-        webpack_config = defaultWebpackConfig(config);
-    }
-    
     return new Promise ((resolve, reject) => {
-        if (args.includes('--hot') || args.includes('hot')) {
-            Log.info("Building with", Log.bold.magenta("Hot Reload"));
-            Object.keys(webpack_config.entry).forEach((entry) => {
-                webpack_config.entry[entry].unshift(`webpack-dev-server/client?http://localhost:${DEV_SERVER_PORT}`, "webpack/hot/dev-server");
-            });
-            webpack_config.output.publicPath = `http://localhost:${DEV_SERVER_PORT}/`;
-            webpack_config.plugins.push(new Webpack.HotModuleReplacementPlugin());
-        } else {
-            Log.info("Building");
-        }
+        let webpack_config = webpackConfig(config, args, true);
         
         let compiler = Webpack(webpack_config);
         if (process.env.NODE_ENV !== 'production') {
@@ -94,15 +115,13 @@ Tasks.build = function (config, args) {
 Tasks.run = function (config, args) {
     const WebpackDevServer = require('webpack-dev-server');
     
+    config = config || {};
+    args = flags(args);
+    
     let tasks = this;
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
-    var webpack_config;
-    try {
-        webpack_config = require(`${app_root}/webpack.config`);
-    } catch (e) {
-        webpack_config = defaultWebpackConfig(config);
-    }
+    let webpack_config = webpackConfig(config, args);
     
     let server_path = `${app_root}/app/server`;
     var server = require(server_path);
@@ -141,14 +160,14 @@ Tasks.run = function (config, args) {
         var assetServer = new WebpackDevServer(compiler, {
             hot: true,
             contentBase: `${app_root}/build/`,
-            publicPath: '/',
+            publicPath: '/assets/',
             noInfo: true
         });
         assetServer.listen(DEV_SERVER_PORT, "localhost", (err) => {
-            if (err) reject(err);
+            if (err) return reject(err);
             
             server.start(() => {
-                Log.info('Server started at http://localhost:5000');
+                Log.info('Server started at', Log.bold('http://localhost:5000'));
                 Log.info(Log.gray('Press Ctrl+C to stop'));
                 
                 // Attach a copy of the asset server
@@ -163,8 +182,8 @@ Tasks.run = function (config, args) {
 
 Tasks.buildAndRun = function (config) {
     return Tasks.clean().then(() => {
-        return Tasks.build(config, ['--hot']).then(() => {
-            return Tasks.run(config);
+        return Tasks.build(config, ['hot']).then(() => {
+            return Tasks.run(config, ['hot']);
         });
     });
 };
