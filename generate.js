@@ -112,7 +112,7 @@ Generate.prototype.model = function (config, args) {
             }
             
             saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-            Log.info("Created model", Log.green(justFilename(model_path, models_path)));
+            Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
             files = [model_path];
             return resolve(files);
             
@@ -406,7 +406,7 @@ Generate.prototype.component = function (config, args) {
             class_name: Inflect.classify(Inflect.underscore(name)),
             file_name: Inflect.dasherize(name)
         }, component_path);
-        Log.info((connected ? "Created connected component" : "Created component"), Log.green(justFilename(component_path, components_path)));
+        Log.info((connected ? "Created connected component" : "Created component"), Log.bold(justFilename(component_path, components_path)));
         files.push(component_path);
         
         // Stylesheet
