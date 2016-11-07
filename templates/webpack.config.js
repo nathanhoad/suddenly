@@ -1,24 +1,26 @@
 require('dotenv').load({ silent: true });
 
+const Path = require('path');
 const Webpack = require('webpack');
 const AutoPrefixer = require('autoprefixer');
 const HtmlPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
-const APP_ROOT = require('app-root-path');
+const APP_ROOT = require('app-root-path').toString();
 const PRODUCTION = (process.env.NODE_ENV == 'production');
 
 
 module.exports = (config) => {
     config = config || {};
+    let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var webpack_config = {
         cache: true,
         entry: {
-            client: [`${config.APP_ROOT || APP_ROOT}/app/client/index.js`]
+            client: [`${app_root}/app/client/index.js`]
         },
         output: {
-            path: `${config.APP_ROOT || APP_ROOT}/build`,
+            path: `${app_root}/build`,
             publicPath: '/assets/',
             filename: '[name]-[hash].js'
         },
@@ -51,8 +53,8 @@ module.exports = (config) => {
                 filename: 'client.html',
                 chunks: ['client'],
                 inject: false,
-                template: `${config.APP_ROOT || APP_ROOT}/app/server/client.html`,
-                favicon: `${config.APP_ROOT || APP_ROOT}/app/assets/images/favicon.png`,
+                template: `${app_root}/app/server/client.html`,
+                favicon: `${app_root}/app/assets/images/favicon.png`,
                 minify: {
                     keepClosingSlash: true,
                     removeComments: true,
@@ -61,13 +63,13 @@ module.exports = (config) => {
                 }
             }),
             new CopyPlugin([
-                { from: `${config.APP_ROOT || APP_ROOT}/app/server/public/**/*`, to: `${config.APP_ROOT || APP_ROOT}/build` }
+                { from: `${app_root}/app/server/public` }
             ])
         ],
         resolve: {
             root: [
-                `${config.APP_ROOT || APP_ROOT}/app/`,
-                `${config.APP_ROOT || APP_ROOT}/app/server/views`
+                `${app_root}/app/`,
+                `${app_root}/app/server/views`
             ]
         }
     };

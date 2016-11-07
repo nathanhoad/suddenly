@@ -66,11 +66,13 @@ lab.experiment('Builder', () => {
                 
                 FS.readdir(`${__dirname}/../tmp/build`, (err, files) => {
                     expect(files).to.be.an.array();
-                    expect(files.length).to.equal(5);
+                    
+                    expect(files.length).to.equal(6);
                     
                     expect(files.filter(f => f.match(/\.js$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.html$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.png$/)).length).to.equal(2);
+                    expect(files.filter(f => f.match(/robots\.txt/)).length, 'Has robots.txt from public folder').to.equal(1);
                     
                     done();
                 });
@@ -123,11 +125,13 @@ lab.experiment('Builder', () => {
                 
                 FS.readdir(`${__dirname}/../tmp/build`, (err, files) => {
                     expect(files).to.be.an.array();
-                    expect(files.length).to.equal(5);
+                    expect(files.length).to.equal(6);
                     
                     expect(files.filter(f => f.match(/\.js$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.html$/)).length).to.equal(1);
                     expect(files.filter(f => f.match(/\.png$/)).length).to.equal(2);
+                    
+                    expect(files.filter(f => f.match(/robots\.txt/)).length, 'Has robots.txt from public folder').to.equal(1);
                     
                     server.assetServer.close();
                     server.watcher.close();
