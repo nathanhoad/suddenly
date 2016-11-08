@@ -403,7 +403,7 @@ Generate.prototype.component = function (config, args) {
         let component = Inflect.dasherize(name);
         let component_path = `${components_path}/${component}.js`;
         saveTemplate((connected ? 'component-connected.js' : 'component.js'), { 
-            class_name: Inflect.classify(Inflect.underscore(name)),
+            class_name: Inflect.titleize(Inflect.underscore(name)).replace(/[^\w]/g, ''),
             file_name: Inflect.dasherize(name)
         }, component_path);
         Log.info((connected ? "Created connected component" : "Created component"), Log.bold(justFilename(component_path, components_path)));
@@ -425,7 +425,7 @@ Generate.prototype.component = function (config, args) {
         } else {
             let test_path = `${tests_path}/${component}-test.js`;
             saveTemplate((connected ? 'component-connected-test.js' : 'component-test.js'), { 
-                class_name: Inflect.classify(Inflect.underscore(name)),
+                class_name: Inflect.titleize(Inflect.underscore(name)).replace(/[^\w]/g, ''),
                 file_name: Inflect.dasherize(name)
             }, test_path);
             Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
