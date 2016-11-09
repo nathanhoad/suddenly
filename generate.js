@@ -272,7 +272,7 @@ Generate.prototype.actions = function (config, args) {
         let files = [];
         
         // Actions
-        let action = Inflect.dasherize(Inflect.pluralize(name));
+        let action = Inflect.dasherize(name);
         let action_path = `${actions_path}/${action}-actions.js`;
         saveTemplate('actions.js', {
             plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
