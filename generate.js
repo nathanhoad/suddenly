@@ -334,9 +334,9 @@ Generate.prototype.reducer = function (config, args) {
             plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
             plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
             plural_class: Inflect.camelize(Inflect.pluralize(name)),
-            single_constant: Inflect.underscore(name).toUpperCase(),
-            single_lowercase: Inflect.underscore(name).toLowerCase(),
-            single_class: Inflect.camelize(name)
+            single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
+            single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+            single_class: Inflect.camelize(Inflect.singularize(name))
         }, reducer_path);
         Log.info("Created reducer", Log.bold(justFilename(reducer_path, reducers_path)));
         files.push(reducer_path);
@@ -363,9 +363,9 @@ Generate.prototype.reducer = function (config, args) {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
                 plural_class: Inflect.camelize(Inflect.pluralize(name)),
-                single_constant: Inflect.underscore(name).toUpperCase(),
-                single_lowercase: Inflect.underscore(name).toLowerCase(),
-                single_class: Inflect.camelize(name)
+                single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
+                single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+                single_class: Inflect.camelize(Inflect.singularize(name))
             }, test_path);
             Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
             files.push(test_path);

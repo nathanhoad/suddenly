@@ -13,7 +13,7 @@ const initial_state = Immutable.fromJS({
 });
 
 
-function {{SINGLE_LOWERCASE}} (state, action) {
+function {{PLURAL_LOWERCASE}} (state, action) {
     if (!state) state = initial_state;
     
     switch (action.type) {
