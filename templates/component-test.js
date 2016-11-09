@@ -4,6 +4,7 @@ const { shallow } = require('enzyme');
 const Sinon = require('sinon');
 
 const Testing = require('../Testing');
+Testing.mockAssets();
 
 const expect = require('code').expect;
 const lab = exports.lab = Lab.script();
