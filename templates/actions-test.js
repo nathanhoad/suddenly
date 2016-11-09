@@ -28,9 +28,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         }));
         
         {{PLURAL_LOWERCASE}} = [
-            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
         ];
         
         done();
@@ -77,7 +77,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     lab.test('it can load a {{SINGLE_LOWERCASE}}', (done) => {
         Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
         
-        store.dispatch(Actions.loadGroup('x')).then(() => {
+        store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
             
             expect(actions.length).to.equal(2);
@@ -110,7 +110,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'New {{SINGLE_CLASS}}'
         };
         
-        Nock(Config.URL).post('/app/{{PLURAL_LOWERCASE}}').reply(200, GroupResource.member(new_{{SINGLE_LOWERCASE}}));
+        Nock(Config.URL).post('/app/{{PLURAL_LOWERCASE}}').reply(200, {{SINGLE_CLASS}}Resource.public(new_{{SINGLE_LOWERCASE}}));
         
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
