@@ -44,7 +44,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('it can load {{PLURAL_LOWERCASE}}', (done) => {
-        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, groups);
+        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, {{PLURAL_LOWERCASE}});
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
