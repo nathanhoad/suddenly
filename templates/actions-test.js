@@ -52,7 +52,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.LOADING_{{PLURAL_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.LOADED_{{PLURAL_CONSTANT}});
-            expect(actions[1].payload.length).to.equal({{SINGLE_LOWERCASE}}.length);
+            expect(actions[1].payload.length).to.equal({{PLURAL_LOWERCASE}}.length);
                 
             done();
         });
