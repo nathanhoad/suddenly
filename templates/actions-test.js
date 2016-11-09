@@ -18,7 +18,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.beforeEach((done) => {
-        store = Helpers.mockStore(Immutable.fromJS({
+        store = Testing.mockStore(Immutable.fromJS({
             is_loading_{{PLURAL_LOWERCASE}}: false,
             {{PLURAL_LOWERCASE}}_error: null,
             is_loading_{{SINGLE_LOWERCASE}}: false,
@@ -28,9 +28,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         }));
         
         {{PLURAL_LOWERCASE}} = [
-            {{SINGLE_CLASS}}Resource.member(Helpers.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.member(Helpers.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.member(Helpers.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.member(Testing.forge{{SINGLE_CLASS}}()),
         ];
         
         done();

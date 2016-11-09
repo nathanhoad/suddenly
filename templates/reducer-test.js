@@ -18,8 +18,8 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
     
     lab.beforeEach((done) => {
         {{PLURAL_LOWERCASE}} = [
-            {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}())
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}())
         ];
         
         initial_state = Immutable.fromJS({
@@ -66,9 +66,9 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
         expect(state.get('by_slug').count()).equal({{PLURAL_LOWERCASE}}.length);
         
         let loaded_{{PLURAL_LOWERCASE}} = [
-            {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}()),
-            {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}())
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}()),
+            {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}())
         ]
         state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.LOADED_{{PLURAL_CONSTANT}}, payload: loaded_{{PLURAL_LOWERCASE}} });
         
@@ -117,7 +117,7 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
         expect(state.get('is_loading_{{SINGLE_LOWERCASE}}')).to.be.false();
         expect(state.get('by_slug').count()).equal(1);
         
-        let loaded_{{SINGLE_LOWERCASE}} = {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}());
+        let loaded_{{SINGLE_LOWERCASE}} = {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}());
         state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.LOADED_{{SINGLE_CONSTANT}}, payload: loaded_{{SINGLE_LOWERCASE}} });
         
         expect(state.get('is_loading_{{SINGLE_LOWERCASE}}')).to.be.false();
@@ -158,7 +158,7 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
     
     
     lab.test("it should handle CREATED_{{SINGLE_CONSTANT}}", (done) => {
-        let {{SINGLE_LOWERCASE}} = {{SINGLE_CLASS}}Resource.public(Helpers.forge{{SINGLE_CLASS}}());
+        let {{SINGLE_LOWERCASE}} = {{SINGLE_CLASS}}Resource.public(Testing.forge{{SINGLE_CLASS}}());
         let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.CREATED_{{SINGLE_CONSTANT}}, payload: {{SINGLE_LOWERCASE}} });
         
         expect(state.get('is_creating_{{SINGLE_LOWERCASE}}')).to.be.false();

@@ -13,7 +13,7 @@ lab.experiment('{{ROUTE}}-routes', () => {
     
     
     lab.beforeEach((done) => {
-        Helpers.resetDatabase().then((session) => {
+        Testing.resetDatabase().then((session) => {
             user = session.user;
             headers = { authorization: session.token };
             done();
