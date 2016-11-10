@@ -1,7 +1,7 @@
 const React = require('react');
 const ReactRedux = require('react-redux');
 
-const styles = require('app/styles/{{FILE_NAME}}.css');
+const styles = require('app/assets/styles/{{FILE_NAME}}.css');
 
 
 class {{CLASS_NAME}} extends React.Component {
