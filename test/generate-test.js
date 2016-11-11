@@ -415,6 +415,34 @@ lab.experiment('Generate', () => {
     });
     
     
+    lab.suite('redux', () => {
+        lab.beforeEach((done) => {
+            FS.copy(`${__dirname}/generate`, `${__dirname}/../tmp`, (err) => {
+                done();
+            });
+        });
+        
+        
+        lab.test('generates actions and a reducer', (done) => {
+            Generate.redux(config, ['things']).then((files) => {
+                expect(files).to.be.an.array();
+                expect(files.length).to.equal(5);
+                
+                // Actions
+                expect(files[0]).to.match(/\-actions\.js$/);
+                expect(files[1]).to.match(/\-actions\-test\.js/);
+                
+                // Reducer
+                expect(files[2]).to.match(/\-reducer\.js/);
+                expect(files[3]).to.match(/reducers\/index\.js/);
+                expect(files[4]).to.match(/\-reducer\-test\.js/);
+                
+                done();
+            });
+        });
+    });
+    
+    
     lab.suite('component', () => {
         lab.beforeEach((done) => {
             FS.mkdirs(`${__dirname}/../tmp/app/client/components`, () => {
