@@ -3,7 +3,7 @@ const React = require('react');
 const { shallow } = require('enzyme');
 const Sinon = require('sinon');
 
-const Testing = require('../Testing');
+const Testing = require('../testing');
 Testing.mockAssets();
 
 const expect = require('code').expect;
