@@ -81,6 +81,7 @@ Suddenly.prototype.handleTasks = function (config, argv) {
     suddenly.defaultTask('generate:component', Generate.component);
     suddenly.defaultTask('generate:reducer', Generate.reducer);
     suddenly.defaultTask('generate:actions', Generate.actions);
+    suddenly.defaultTask('generate:redux', Generate.redux);
     suddenly.defaultTask('generate:style', Generate.style);
 
     suddenly.defaultTask('generate:migration', Generate.migration);
