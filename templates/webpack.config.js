@@ -10,7 +10,7 @@ const APP_ROOT = require('app-root-path').toString();
 const PRODUCTION = (process.env.NODE_ENV == 'production');
 
 
-module.exports = (config) => {
+module.exports = (config, args) => {
     config = config || {};
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
