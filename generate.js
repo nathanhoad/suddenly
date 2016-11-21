@@ -405,6 +405,7 @@ const Generate = {
             let files = [];
             
             let connected = args.includes('connected');
+            let with_provider = args.includes('with-provider');
             
             // Component
             let component = Inflect.dasherize(name);
@@ -431,7 +432,13 @@ const Generate = {
                 Log.muted('generate:component', 'Skipped creating tests');
             } else {
                 let test_path = `${tests_path}/${component}-test.js`;
-                saveTemplate((connected ? 'component-connected-test.js' : 'component-test.js'), { 
+                let template = 'component-test.js';
+                if (with_provider) {
+                    template = 'component-with-provider-test.js';
+                } else if (connected) {
+                    template = 'component-connected-test.js';
+                }
+                saveTemplate(template, {
                     class_name: Inflect.titleize(Inflect.underscore(name)).replace(/[^\w]/g, ''),
                     file_name: Inflect.dasherize(name)
                 }, test_path);

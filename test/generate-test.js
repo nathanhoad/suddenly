@@ -479,6 +479,34 @@ lab.experiment('Generate', () => {
                 // Test
                 var test_file_contents = FS.readFileSync(files[2], "utf8");
                 expect(test_file_contents).to.include('lab.experiment("Thing:", () => {');
+                expect(test_file_contents).to.include('shallow(');
+                
+                done();
+            }).catch((err) => {
+                console.log(err.stack);
+                done();
+            });
+        });
+        
+        
+        lab.test('generates a component and mounted tests', (done) => {
+            Generate.component(config, ['thing', 'with-provider']).then((files) => {
+                expect(files).to.be.an.array();
+                expect(files.length).to.equal(3);
+                
+                // Component
+                var component_file_contents = FS.readFileSync(files[0], "utf8");
+                expect(component_file_contents).to.include("class Thing extends React.Component {");
+                
+                // Style
+                var style_file_contents = FS.readFileSync(files[1], "utf8");
+                expect(style_file_contents).to.include(".wrapper {}");
+                
+                // Test
+                var test_file_contents = FS.readFileSync(files[2], "utf8");
+                expect(test_file_contents).to.include('lab.experiment("Thing:", () => {');
+                expect(test_file_contents).to.include('mount(');
+                expect(test_file_contents).to.include('<Provider');
                 
                 done();
             }).catch((err) => {

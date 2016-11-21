@@ -39,7 +39,7 @@ Generates bootstrap files for the project.
 * `actions (config, args)`- Generates an actions file and tests named from `args[0]`. Pass 'no-tests' to skip creating tests.
 * `reducer (config, args)` - Generates a reducer file and tests named from `args[0]`. Pass 'no-tests' to skip creating tests.
 * `redux (config, args)` - Shortcut for generating an actions and a reducer at the same time.
-* `component (config, args)` - Generates a React component and tests named from `args[0]`. Pass 'no-tests' to skip creating tests. Pass 'connected' to generate a Redux connected component. Pass `no-style` to skip generating a stylesheet.
+* `component (config, args)` - Generates a React component and tests named from `args[0]`. Pass 'no-tests' to skip creating tests. Pass 'connected' to generate a Redux connected component. Pass `no-style` to skip generating a stylesheet. Pass `with-provider` to include a provider setup in the tests.
 * `style (config, args)` - Generates a stylesheet.
 
 
