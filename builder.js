@@ -26,7 +26,7 @@ function webpackConfig (config, args, logged) {
     try {
         webpack_config = require(`${app_root}/webpack.config`);
     } catch (e) {
-        webpack_config = defaultWebpackConfig(config);
+        webpack_config = defaultWebpackConfig(config, args);
     }
     
     if (args.includes('hot')) {
