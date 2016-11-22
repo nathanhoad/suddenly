@@ -19,7 +19,7 @@ module.exports.routes = (server, config) => {
         try {
             server.route(require(`${routes_path}/${file}`));
         } catch (err) {
-            // The route didn't load...
+            Log.error(err.stack);
         }
     });
 
