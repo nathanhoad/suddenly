@@ -82,7 +82,7 @@ module.exports = (config, args) => {
         }
     };
 
-    if (PRODUCTION && !args.includes('--no-uglify')) {
+    if (PRODUCTION && !args.includes('no-uglify')) {
         webpack_config.plugins.push(new Webpack.optimize.UglifyJsPlugin({ sourceMap: false, compress: { warnings: false }}));
     }
     
