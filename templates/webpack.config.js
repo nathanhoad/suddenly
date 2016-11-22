@@ -10,8 +10,16 @@ const APP_ROOT = require('app-root-path').toString();
 const PRODUCTION = (process.env.NODE_ENV == 'production');
 
 
+function flags (args) {
+    args = args || [];
+    return args.map(arg => arg.replace(/^\-\-/, ''));
+}
+
+
 module.exports = (config, args) => {
     config = config || {};
+    args = flags(args);
+    
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var webpack_config = {
