@@ -8,7 +8,8 @@ const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCAS
 const { expect } = require('code');
 const lab = exports.lab = Lab.script();
 
-Testing.mockDom();
+const URL = 'http://test.com';
+Testing.mockDom(URL);
 
 const Actions = require('app/client/actions/{{SINGLE_LOWERCASE}}-actions');
 
