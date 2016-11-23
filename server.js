@@ -41,7 +41,7 @@ module.exports.routes = (server, config) => {
             engines: {
                 html: Handlebars
             },
-            path: `${app_root}/build`,
+            path: [`${app_root}/build`, `${app_root}/app/server`],
             layout: false,
             context: config.DEFAULT_CONTEXT || {}
         });
