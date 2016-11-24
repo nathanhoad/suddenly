@@ -254,8 +254,9 @@ lab.experiment('Generate', () => {
                 expect(notification_js_file_contents).to.include("module.exports.newUser = (user, callback) => {");
                 expect(notification_js_file_contents).to.include("Mailer.newUser(user.get('email'), 'newUser', { user: user.toJSON() }, callback);");
                 
+                expect(files[1]).to.match(/new\-user\.html$/);
                 var notification_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(notification_file_contents).to.include("<p>This is a new-users notification.</p>");
+                expect(notification_file_contents).to.include("<p>This is a new-user notification.</p>");
                 
                 done();
             }).catch((err) => {

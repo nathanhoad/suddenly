@@ -46,7 +46,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('it can load {{PLURAL_LOWERCASE}}', (done) => {
-        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, {{PLURAL_LOWERCASE}});
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, {{PLURAL_LOWERCASE}});
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
@@ -62,7 +62,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('loading {{PLURAL_LOWERCASE}} can fail', (done) => {
-        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{PLURAL_LOWERCASE}} failed' });
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{PLURAL_LOWERCASE}} failed' });
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
@@ -77,7 +77,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('it can load a {{SINGLE_LOWERCASE}}', (done) => {
-        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
         
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
@@ -93,7 +93,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('loading a {{SINGLE_LOWERCASE}} can fail', (done) => {
-        Nock(Config.URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
@@ -112,7 +112,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'New {{SINGLE_CLASS}}'
         };
         
-        Nock(Config.URL).post('/app/{{PLURAL_LOWERCASE}}').reply(200, {{SINGLE_CLASS}}Resource.public(new_{{SINGLE_LOWERCASE}}));
+        Nock(URL).post('/app/{{PLURAL_LOWERCASE}}').reply(200, {{SINGLE_CLASS}}Resource.public(new_{{SINGLE_LOWERCASE}}));
         
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
@@ -132,7 +132,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'New {{SINGLE_CLASS}}'
         };
         
-        Nock(Config.URL).post('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Creating {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).post('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Creating {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
