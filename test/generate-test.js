@@ -154,10 +154,10 @@ lab.experiment('Generate', () => {
         });
         
         
-        lab.test('generates a new routes file and tests', (done) => {
+        lab.test('generates a new routes file, resource, and tests', (done) => {
             Generate.routes(config, ['thing']).then((files) => {
                 expect(files).to.be.an.array();
-                expect(files.length).to.equal(2);
+                expect(files.length).to.equal(3);
                 
                 // Routes
                 var route_file_contents = FS.readFileSync(files[0], "utf8");
@@ -168,6 +168,10 @@ lab.experiment('Generate', () => {
                 expect(test_file_contents).to.include("lab.experiment('things-routes', () => {");
                 expect(test_file_contents).to.include("lab.suite('GET /things', () => {");
                 
+                // Resource tests
+                var resource_file_contents = FS.readFileSync(files[2], "utf8");
+                expect(resource_file_contents).to.include("module.exports.public = (thing) => {");
+                
                 done();
             }).catch((err) => {
                 console.log(err);
@@ -177,7 +181,7 @@ lab.experiment('Generate', () => {
         
         
         lab.test('can generate just a route file', (done) => {
-            Generate.routes(config, ['thing', '--no-tests']).then((files) => {
+            Generate.routes(config, ['thing', '--no-tests', '--no-resource']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(1);
                 

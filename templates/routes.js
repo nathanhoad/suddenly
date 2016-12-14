@@ -10,7 +10,7 @@ module.exports = [
         method: 'GET',
         path: '/{{ROUTE}}',
         config: {
-            handler: (request, reply) => {
+            handler (request, reply) {
                 reply('Find me in app/server/routes/{{ROUTE}}-routes.js');
             }
         }

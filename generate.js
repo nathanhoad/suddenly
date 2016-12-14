@@ -176,7 +176,10 @@ const Generate = {
                 files.push(route_test_path);
             }
             
-            return resolve(files);
+            Generate.resource(config, args).then((resource_files) => {
+                files = files.concat(resource_files);
+                resolve(files);
+            });
         });
     },
 
@@ -191,6 +194,11 @@ const Generate = {
             if (args.length == 0) {
                 Log.error('No name specified');
                 return reject(new Error('No name specified'));
+            }
+            
+            if (args.includes('no-resource')) {
+                Log.muted('Skipped creating resource');
+                return resolve([]);
             }
             
             let name = args[0].toLowerCase();
