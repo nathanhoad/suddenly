@@ -3,6 +3,8 @@ const Path = require('path');
 const Inflect = require('i')();
 const Knex = require('knex');
 const Log = require('./log');
+const merge = require('lodash/merge');
+const flattenDeep = require('lodash/flattenDeep');
 
 const APP_ROOT = require('app-root-path').toString();
 
@@ -15,8 +17,15 @@ function setupKnex (config) {
 }
 
 
-function saveTemplate (filename, replacements, save_to_file) {
-    let template = FS.readFileSync(`${__dirname}/templates/${filename}`, 'utf8');
+function saveTemplate (file_or_filename, replacements, save_to_file) {
+    let template = '';
+    
+    if (file_or_filename.includes('\n')) {
+        template = file_or_filename;
+    } else {
+        template = FS.readFileSync(`${__dirname}/templates/${file_or_filename}`, 'utf8');
+    }
+    
     Object.keys(replacements).forEach((find) => {
         template = template.replace(new RegExp('{{' + find.toUpperCase() + '}}', 'g'), replacements[find]);
     });
@@ -53,6 +62,11 @@ const Generate = {
                 return reject(new Error('No name specified'));
             }
             
+            if (args.includes('no-migration')) {
+                Log.muted('Skipping migration');
+                return resolve([]);
+            }
+            
             const options = {
                 tableName: 'schema_migrations',
                 directory: Path.resolve(`${app_root}/migrations`)
@@ -61,24 +75,35 @@ const Generate = {
             let knex = setupKnex(config);
             let name = args[0].replace(/\s/g, '-');
             
-            knex.migrate.make(Inflect.dasherize(name), options).then((migration_path) => {
-                saveTemplate('migration.js', {}, migration_path);
-                // Log.info('generate:migration', 'Created migration', Log.bold(justFilename(migration_path, options.directory)));
+            let migration_name = Inflect.dasherize(name);
+            let migration_template = 'migration.js';
+            if (args.includes('model')) {
+                migration_name = `create-${Inflect.dasherize(name)}`;
+                migration_template = 'model-migration.js';
+            }
+            
+            knex.migrate.make(migration_name, options).then((migration_path) => {
+                saveTemplate(migration_template, { 
+                    table: Inflect.tableize(name) 
+                }, migration_path);
                 Log.info('Created migration', Log.bold(justFilename(migration_path, options.directory)));
+                
                 return resolve([migration_path]);
+                
             }).catch((err) => {
                 Log.error(err.message);
                 return reject(err);
             });
         });
     },
-
-
+    
+    
     model (config, args) {
         config = config || {};
         args = flags(args);
         
         let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        let files = [];
         
         return new Promise((resolve, reject) => {
             if (args.length == 0) {
@@ -86,55 +111,50 @@ const Generate = {
                 return reject(new Error('No name specified'));
             }
             
-            const options = {
-                tableName: 'schema_migrations',
-                directory: Path.resolve(`${app_root}/migrations`)
-            };
+            if (args.includes('no-model')) {
+                Log.muted('Skipping creating model');
+                return resolve(files);
+            }
             
-            let knex = setupKnex(config);
+            // Create the model
             let name = args[0].toLowerCase();
             let models_path = `${app_root}/app/server/models`;
             FS.mkdirsSync(models_path);
             
-            let files = [];
-            
             let table_name = Inflect.tableize(name);
             let model_path = `${models_path}/${Inflect.dasherize(Inflect.singularize(table_name))}.js`;
             
-            if (args.includes('no-migration')) {
-                Log.muted('Skipped creating migration');
-                
-                if (args.includes('no-model')) {
-                    Log.muted('Skipped creating model');
-                    return resolve([]); // Not sure why anyone would do this but whatever
-                }
-                
-                saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-                Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
-                files = [model_path];
-                return resolve(files);
-                
-            } else {
-                knex.migrate.make(`create-${Inflect.dasherize(table_name)}`, options).then((migration_path) => {
-                    saveTemplate('model-migration.js', { table: table_name }, migration_path);
-                    Log.info('Created migration', Log.bold(justFilename(migration_path, options.directory)));
-                    files.push(migration_path);
-                    
-                    if (args.includes('no-model')) {
-                        Log.muted('Skipped creating model');
-                    } else {
-                        saveTemplate('model.js', { table: table_name, model: Inflect.classify(name) }, model_path);
-                        Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
-                        files.push(model_path);
-                    }
-                    
-                    return resolve(files);
-                    
-                }).catch(err => {
-                    Log.error(err.message);
-                    return reject(err);
-                });
-            }
+            saveTemplate('model.js', { 
+                table: table_name, 
+                model: Inflect.classify(name.replace('-', '_'))
+            }, model_path);
+            Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
+            files = files.concat(model_path);
+            
+            // Add the model to the testing forge
+            let testing_template = `\nTesting.forge{{MODEL_CLASS}} = (details) => {
+let properties = _.assign({}, {
+id: Testing.uuid(),
+// TODO: Add any other required fields
+}, details);
+
+return {{MODEL_CLASS}}.forge(properties);
+};
+
+
+Testing.create{{MODEL_CLASS}} = (details) => {
+return {{MODEL_CLASS}}.create(Testing.forge{{MODEL_CLASS}}(details));
+};\n\n\nmodule.exports = Testing`;
+            
+            let testing_path = Path.resolve(`${app_root}/test/testing.js`);
+            let testing = FS.readFileSync(testing_path, 'utf8').replace('module.exports = Testing', testing_template);
+            
+            saveTemplate(testing, { 
+                model_class: Inflect.classify(name.replace('-', '_'))
+            }, testing_path);
+            files = files.concat(testing_path);
+            
+            return resolve(files);
         });
     },
 
@@ -154,32 +174,42 @@ const Generate = {
             let name = args[0].toLowerCase();
             let routes_path = Path.resolve(`${app_root}/app/server/routes`);
             FS.mkdirsSync(routes_path);
-            let routes_tests_path = Path.resolve(`${app_root}/test/routes`);
-            FS.mkdirsSync(routes_tests_path);
-            
-            let files = [];
             
             // Generate the routes
             let route = Inflect.dasherize(Inflect.pluralize(name));
             let route_path = `${routes_path}/${route}-routes.js`;
             saveTemplate('routes.js', { route: route }, route_path);
             Log.info("Created routes", Log.bold(justFilename(route_path, routes_path)));
-            files.push(route_path);
             
+            return resolve([route_path]);
+        });
+    },
+    
+    
+    routesTests (config, args) {
+        config = config || {};
+        args = flags(args);
+        
+        let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        
+        return new Promise((resolve, reject) => {
             if (args.includes('no-tests')) {
                 Log.muted('Skipped creating tests');
-            } else {
-                // Generate the tests
-                let route_test_path = `${routes_tests_path}/${route}-routes-test.js`;
-                saveTemplate('routes-test.js', { route: route }, route_test_path);
-                Log.info("Created test", Log.bold(justFilename(route_test_path, routes_tests_path)));
-                files.push(route_test_path);
+                return resolve([]);
             }
             
-            Generate.resource(config, args).then((resource_files) => {
-                files = files.concat(resource_files);
-                resolve(files);
-            });
+            let name = args[0].toLowerCase();
+            let routes_tests_path = Path.resolve(`${app_root}/test/routes`);
+            FS.mkdirsSync(routes_tests_path);
+            
+            let route = Inflect.dasherize(Inflect.pluralize(name));
+            let route_test_path = `${routes_tests_path}/${route}-routes-test.js`;
+            saveTemplate('routes-test.js', { 
+                route: route 
+            }, route_test_path);
+            Log.info("Created test", Log.bold(justFilename(route_test_path, routes_tests_path)));
+            
+            return resolve([route_test_path]);
         });
     },
 
@@ -204,15 +234,13 @@ const Generate = {
             let name = args[0].toLowerCase();
             let resources_path = Path.resolve(`${app_root}/app/server/resources`);
             FS.mkdirsSync(resources_path);
-            let files = [];
             
             let resource = Inflect.dasherize(name);
             let resource_path = `${resources_path}/${resource}-resource.js`;
             saveTemplate('resource.js', { model: Inflect.underscore(name) }, resource_path);
             Log.info("Created resource", Log.bold(justFilename(resource_path, resources_path)));
-            files.push(resource_path);
             
-            return resolve(files);
+            return resolve([resource_path]);
         });
     },
 
@@ -272,12 +300,7 @@ const Generate = {
             let name = args[0].toLowerCase();
             let actions_path = Path.resolve(`${app_root}/app/client/actions`);
             FS.mkdirsSync(actions_path);
-            let tests_path = Path.resolve(`${app_root}/test/actions`);
-            FS.mkdirsSync(tests_path);
             
-            let files = [];
-            
-            // Actions
             let action = Inflect.dasherize(Inflect.singularize(name));
             let action_path = `${actions_path}/${action}-actions.js`;
             saveTemplate('actions.js', {
@@ -289,27 +312,47 @@ const Generate = {
                 single_class: Inflect.camelize(Inflect.singularize(name)),
             }, action_path);
             Log.info("Created actions", Log.bold(justFilename(action_path, actions_path)));
-            files.push(action_path);
             
-            // test
-            if (args.includes('no-tests')) {
-                Log.muted('Skipped creating tests');
-            } else {
-                let test_path = `${tests_path}/${action}-actions-test.js`;
-                saveTemplate('actions-test.js', {
-                    plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
-                    plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                    plural_class: Inflect.camelize(Inflect.pluralize(name)),
-                    single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
-                    single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                    single_class: Inflect.camelize(Inflect.singularize(name)),
-                }, test_path);
-                Log.info("Created test", Log.bold(justFilename(test_path, tests_path)));
-                files.push(test_path);
+            return resolve([action_path]);
+        })
+    },
+    
+    
+    actionsTests (config, args) {
+        config = config || {};
+        args = flags(args);
+        
+        let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        
+        return new Promise((resolve, reject) => {
+            if (args.length == 0) {
+                Log.error('No name specified');
+                return reject(new Error('No name specified'));
             }
             
-            return resolve(files);
-        })
+            if (args.includes('no-tests')) {
+                Log.muted('Skipped creating tests');
+                return resolve([]);
+            }
+            
+            let name = args[0].toLowerCase();
+            let tests_path = Path.resolve(`${app_root}/test/actions`);
+            FS.mkdirsSync(tests_path);
+            
+            let action = Inflect.dasherize(Inflect.singularize(name));
+            let test_path = `${tests_path}/${action}-actions-test.js`;
+            saveTemplate('actions-test.js', {
+                plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
+                plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
+                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
+                single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+                single_class: Inflect.camelize(Inflect.singularize(name)),
+            }, test_path);
+            Log.info("Created test", Log.bold(justFilename(test_path, tests_path)));
+            
+            return resolve([test_path]);
+        });
     },
 
 
@@ -328,8 +371,6 @@ const Generate = {
             let name = args[0].toLowerCase();
             let reducers_path = Path.resolve(`${app_root}/app/client/reducers`);
             FS.mkdirsSync(reducers_path);
-            let tests_path = Path.resolve(`${app_root}/test/reducers`);
-            FS.mkdirsSync(tests_path);
             
             let files = [];
             
@@ -360,33 +401,45 @@ const Generate = {
             FS.writeFileSync(reducers_index_path, reducers_index.join('\n'));
             files.push(reducers_index_path);
             
-            // Create tests
-            if (args.includes('no-tests')) {
-                Log.muted('Skipped creating tests');
-            } else {
-                let test_path = `${tests_path}/${reducer}-reducer-test.js`;
-                saveTemplate('reducer-test.js', {
-                    plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
-                    plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                    plural_class: Inflect.camelize(Inflect.pluralize(name)),
-                    single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
-                    single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                    single_class: Inflect.camelize(Inflect.singularize(name))
-                }, test_path);
-                Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
-                files.push(test_path);
-            }
-            
-            resolve(files);
+            return resolve(files);
         });
     },
-
-
-    redux (config, args) {
-        return Generate.actions(config, args).then((action_files) => {
-            return Generate.reducer(config, args).then((reducer_files) => {
-                return Promise.resolve(action_files.concat(reducer_files));
-            });
+    
+    
+    reducerTests (config, args) {
+        config = config || {};
+        args = flags(args);
+        
+        let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        
+        return new Promise((resolve, reject) => {
+            if (args.length == 0) {
+                Log.error('No name specified');
+                return reject(new Error('No name specified'));
+            }
+            
+            if (args.includes('no-tests')) {
+                Log.muted('Skipped creating tests');
+                return resolve([]);
+            }
+            
+            let name = args[0].toLowerCase();
+            let tests_path = Path.resolve(`${app_root}/test/reducers`);
+            FS.mkdirsSync(tests_path);
+            
+            let reducer = Inflect.dasherize(Inflect.pluralize(name));
+            let test_path = `${tests_path}/${reducer}-reducer-test.js`;
+            saveTemplate('reducer-test.js', {
+                plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
+                plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
+                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
+                single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+                single_class: Inflect.camelize(Inflect.singularize(name))
+            }, test_path);
+            Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
+            
+            return resolve([test_path]);
         });
     },
 
@@ -406,11 +459,6 @@ const Generate = {
             let name = args[0].toLowerCase();
             let components_path = Path.resolve(`${app_root}/app/client/components`);
             FS.mkdirsSync(components_path);
-            let styles_path = Path.resolve(`${app_root}/app/assets/styles`);
-            FS.mkdirsSync(styles_path);
-            let tests_path = Path.resolve(`${app_root}/test/components`);
-            FS.mkdirsSync(tests_path);
-            let files = [];
             
             let connected = args.includes('connected');
             let with_provider = args.includes('with-provider');
@@ -423,38 +471,51 @@ const Generate = {
                 file_name: Inflect.dasherize(name)
             }, component_path);
             Log.info((connected ? "Created connected component" : "Created component"), Log.bold(justFilename(component_path, components_path)));
-            files.push(component_path);
             
-            // Stylesheet
-            if (args.includes('no-style')) {
-                Log.muted('generate:component', 'Skipped creating style');
-            } else {
-                let style_path = `${styles_path}/${component}.css`;
-                saveTemplate('style.css', {}, style_path);
-                Log.info("Created style", Log.bold(justFilename(style_path, styles_path)));
-                files.push(style_path);
+            return resolve([component_path]);
+        });
+    },
+    
+    
+    componentTests (config, args) {
+        config = config || {};
+        args = flags(args);
+        
+        let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        
+        return new Promise((resolve, reject) => {
+            if (args.length == 0) {
+                Log.error('No name specified');
+                return reject(new Error('No name specified'));
             }
             
-            // Tests
             if (args.includes('no-tests')) {
-                Log.muted('generate:component', 'Skipped creating tests');
-            } else {
-                let test_path = `${tests_path}/${component}-test.js`;
-                let template = 'component-test.js';
-                if (with_provider) {
-                    template = 'component-with-provider-test.js';
-                } else if (connected) {
-                    template = 'component-connected-test.js';
-                }
-                saveTemplate(template, {
-                    class_name: Inflect.titleize(Inflect.underscore(name)).replace(/[^\w]/g, ''),
-                    file_name: Inflect.dasherize(name)
-                }, test_path);
-                Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
-                files.push(test_path);
+                Log.muted('Skipped creating tests');
+                return resolve([]);
             }
             
-            resolve(files);
+            let name = args[0].toLowerCase();
+            let tests_path = Path.resolve(`${app_root}/test/components`);
+            FS.mkdirsSync(tests_path);
+            
+            let connected = args.includes('connected');
+            let with_provider = args.includes('with-provider');
+            
+            let component = Inflect.dasherize(name);
+            let test_path = `${tests_path}/${component}-test.js`;
+            let template = 'component-test.js';
+            if (with_provider) {
+                template = 'component-with-provider-test.js';
+            } else if (connected) {
+                template = 'component-connected-test.js';
+            }
+            saveTemplate(template, {
+                class_name: Inflect.titleize(Inflect.underscore(name)).replace(/[^\w]/g, ''),
+                file_name: Inflect.dasherize(name)
+            }, test_path);
+            Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
+            
+            return resolve(test_path);
         });
     },
 
@@ -471,24 +532,58 @@ const Generate = {
                 return reject(new Error('No name specified'));
             }
             
+            if (args.includes('no-style')) {
+                Log.muted('generate:component', 'Skipped creating style');
+                return resolve([]);
+            }
+            
             let name = args[0].toLowerCase();
             let styles_path = Path.resolve(`${app_root}/app/assets/styles`);
             FS.mkdirsSync(styles_path);
-            
-            let files = [];
             
             let component = Inflect.dasherize(name);
             let style_path = `${styles_path}/${component}.css`;
             saveTemplate('style.css', {}, style_path);
             Log.info("Created style", Log.bold(justFilename(style_path, styles_path)));
-            files.push(style_path);
             
-            resolve(files);
+            return resolve([style_path]);
         });
     }
 };
 
 
+function combine (tasks, extra_config, extra_args) {
+    return function (config, args){
+        config = config || {};
+        args = flags(args);
+        
+        if (args.length == 0) {
+            Log.error('No name specified');
+            return Promise.reject(new Error('No name specified'));
+        }
+        
+        if (extra_config) config = merge(config, extra_config)
+        if (extra_args) args = args.concat(extra_args);
+        
+        let promisified_tasks = tasks.map((task) => task(config, args));
+        
+        return Promise.all(promisified_tasks).then((filess) => {
+            return flattenDeep([filess]);
+        });
+    }
+}
 
 
-module.exports = Generate;
+// Build the tasks
+module.exports.migration = Generate.migration;
+
+module.exports.model = combine([Generate.model, Generate.migration], {}, ['model']);
+module.exports.routes = combine([Generate.routes, Generate.routesTests, Generate.resource]);
+module.exports.resource = Generate.resource;
+module.exports.notification = Generate.notification;
+
+module.exports.actions = combine([Generate.actions, Generate.actionsTests]);
+module.exports.reducer = combine([Generate.reducer, Generate.reducerTests]);
+module.exports.redux = combine([Generate.actions, Generate.actionsTests, Generate.reducer, Generate.reducerTests]);
+module.exports.component = combine([Generate.component, Generate.componentTests, Generate.style]);
+module.exports.style = Generate.style;

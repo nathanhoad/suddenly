@@ -45,7 +45,7 @@ lab.experiment('Generate', () => {
     
     lab.suite('model', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/app/server/models`, () => {
+            FS.copy(`${__dirname}/generate`, `${__dirname}/../tmp`, (err) => {
                 done();
             });
         });
@@ -62,19 +62,25 @@ lab.experiment('Generate', () => {
         lab.test('generates a model and a migration by default', (done) => {
             Generate.model(config, ['thing']).then((files) => {
                 expect(files).to.be.an.array();
-                expect(files.length).to.equal(2);
+                expect(files.length).to.equal(3);
+                
+                // Model
+                var model_file_contents = FS.readFileSync(files[0], "utf8");
+                expect(model_file_contents).to.include("module.exports = Bookshelf.model('Thing', {");
+                expect(model_file_contents).to.include("tableName: 'things'");
+                
+                // Testing
+                var testing_file_contents = FS.readFileSync(files[1], "utf8");
+                expect(testing_file_contents).to.include("Testing.forgeThing = (details) => {");
+                expect(testing_file_contents).to.include("Testing.createThing = (details) => {");
+                expect(testing_file_contents).to.include("module.exports = Testing;");
                 
                 // Migration
-                var migration_file_contents = FS.readFileSync(files[0], "utf8");
+                var migration_file_contents = FS.readFileSync(files[2], "utf8");
                 expect(migration_file_contents).to.include('up (knex, Promise) {');
                 expect(migration_file_contents).to.include("return knex.schema.createTable('things', (table) => {");
                 expect(migration_file_contents).to.include('down (knex, Promise) {');
                 expect(migration_file_contents).to.include("return knex.schema.dropTable('things');");
-                
-                // Model
-                var model_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(model_file_contents).to.include("module.exports = Bookshelf.model('Thing', {");
-                expect(model_file_contents).to.include("tableName: 'things'");
                 
                 done();
             }).catch((err) => {
@@ -85,14 +91,20 @@ lab.experiment('Generate', () => {
         
         
         lab.test('can generate only a model', (done) => {
-            Generate.model(config, ['thing', '--no-migration']).then((files) => {
+            Generate.model(config, ['only-thing', '--no-migration']).then((files) => {
                 expect(files).to.be.an.array();
-                expect(files.length).to.equal(1);
+                expect(files.length).to.equal(2);
                 
                 // Model
                 var model_file_contents = FS.readFileSync(files[0], "utf8");
-                expect(model_file_contents).to.include("module.exports = Bookshelf.model('Thing', {");
-                expect(model_file_contents).to.include("tableName: 'things'");
+                expect(model_file_contents).to.include("module.exports = Bookshelf.model('OnlyThing', {");
+                expect(model_file_contents).to.include("tableName: 'only_things'");
+                
+                // Testing
+                var testing_file_contents = FS.readFileSync(files[1], "utf8");
+                expect(testing_file_contents).to.include("Testing.forgeOnlyThing = (details) => {");
+                expect(testing_file_contents).to.include("Testing.createOnlyThing = (details) => {");
+                expect(testing_file_contents).to.include("module.exports = Testing;");
                 
                 done();
             }).catch((err) => {
@@ -168,7 +180,7 @@ lab.experiment('Generate', () => {
                 expect(test_file_contents).to.include("lab.experiment('things-routes', () => {");
                 expect(test_file_contents).to.include("lab.suite('GET /things', () => {");
                 
-                // Resource tests
+                // Resource
                 var resource_file_contents = FS.readFileSync(files[2], "utf8");
                 expect(resource_file_contents).to.include("module.exports.public = (thing) => {");
                 
@@ -477,14 +489,14 @@ lab.experiment('Generate', () => {
                 var component_file_contents = FS.readFileSync(files[0], "utf8");
                 expect(component_file_contents).to.include("class Thing extends React.Component {");
                 
-                // Style
-                var style_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(style_file_contents).to.include(".wrapper {}");
-                
                 // Test
-                var test_file_contents = FS.readFileSync(files[2], "utf8");
+                var test_file_contents = FS.readFileSync(files[1], "utf8");
                 expect(test_file_contents).to.include('lab.experiment("Thing:", () => {');
                 expect(test_file_contents).to.include('shallow(');
+                
+                // Style
+                var style_file_contents = FS.readFileSync(files[2], "utf8");
+                expect(style_file_contents).to.include(".wrapper {}");
                 
                 done();
             }).catch((err) => {
@@ -503,15 +515,15 @@ lab.experiment('Generate', () => {
                 var component_file_contents = FS.readFileSync(files[0], "utf8");
                 expect(component_file_contents).to.include("class Thing extends React.Component {");
                 
-                // Style
-                var style_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(style_file_contents).to.include(".wrapper {}");
-                
                 // Test
-                var test_file_contents = FS.readFileSync(files[2], "utf8");
+                var test_file_contents = FS.readFileSync(files[1], "utf8");
                 expect(test_file_contents).to.include('lab.experiment("Thing:", () => {');
                 expect(test_file_contents).to.include('mount(');
                 expect(test_file_contents).to.include('<Provider');
+                
+                // Style
+                var style_file_contents = FS.readFileSync(files[2], "utf8");
+                expect(style_file_contents).to.include(".wrapper {}");
                 
                 done();
             }).catch((err) => {
