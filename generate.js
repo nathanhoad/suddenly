@@ -149,8 +149,11 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             let testing_path = Path.resolve(`${app_root}/test/testing.js`);
             let testing = FS.readFileSync(testing_path, 'utf8').replace('module.exports = Testing', testing_template);
 
+            testing = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_REQUIRE}}');\n` + testing;
+
             saveTemplate(testing, {
-                model_class: Inflect.classify(name.replace('-', '_'))
+                model_class: Inflect.classify(name.replace('-', '_')),
+                model_require: Inflect.dasherize(name.toLowerCase().replace(' ', '_'))
             }, testing_path);
             files = files.concat(testing_path);
 
