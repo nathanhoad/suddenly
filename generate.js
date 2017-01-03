@@ -238,9 +238,11 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             let resources_path = Path.resolve(`${app_root}/app/server/resources`);
             FS.mkdirsSync(resources_path);
 
-            let resource = Inflect.dasherize(name);
+            let resource = Inflect.dasherize(Inflect.singularize(name));
             let resource_path = `${resources_path}/${resource}-resource.js`;
-            saveTemplate('resource.js', { model: Inflect.underscore(name) }, resource_path);
+            saveTemplate('resource.js', { 
+                model: Inflect.underscore(Inflect.singularize(name))
+            }, resource_path);
             Log.info("Created resource", Log.bold(justFilename(resource_path, resources_path)));
 
             return resolve([resource_path]);

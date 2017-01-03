@@ -227,7 +227,7 @@ lab.experiment('Generate', () => {
         
         
         lab.test('generates a new resource file', (done) => {
-            Generate.resource(config, ['thing']).then((files) => {
+            Generate.resource(config, ['things']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(1);
                 
