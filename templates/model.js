@@ -10,7 +10,7 @@ module.exports = Bookshelf.model('{{MODEL}}', {
         Bookshelf.Model.prototype.initialize.apply(this, arguments);
         
         this.on('creating', () => {
-            this.attributes.id = this.attributes.id || Gimmea.uuid();
+            this.attributes.id = this.attributes.id || Gimmea.uuid();{{GENERATE_SLUG}}
         });
     }
 });

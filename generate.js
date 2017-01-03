@@ -25,6 +25,9 @@ function saveTemplate (file_or_filename, replacements, save_to_file) {
     } else {
         template = FS.readFileSync(`${__dirname}/templates/${file_or_filename}`, 'utf8');
     }
+    
+    // Change tabs to spaces
+    replacements['\t'] = '    ';
 
     Object.keys(replacements).forEach((find) => {
         template = template.replace(new RegExp('{{' + find.toUpperCase() + '}}', 'g'), replacements[find]);
@@ -81,10 +84,19 @@ const Generate = {
                 migration_name = `create-${Inflect.dasherize(name)}`;
                 migration_template = 'model-migration.js';
             }
+            
+            let define_slug = '';
+            let slug_index = '';
+            if (args.includes('endpoint')) {
+                define_slug = `table.string('slug');\n\t\t\t`;
+                slug_index = `\n\t\t\ttable.index('slug');`;
+            }
 
             knex.migrate.make(migration_name, options).then((migration_path) => {
                 saveTemplate(migration_template, {
-                    table: Inflect.tableize(name)
+                    table: Inflect.tableize(name),
+                    define_slug: define_slug,
+                    slug_index: slug_index
                 }, migration_path);
                 Log.info('Created migration', Log.bold(justFilename(migration_path, options.directory)));
 
@@ -124,9 +136,17 @@ const Generate = {
             let table_name = Inflect.tableize(name);
             let model_path = `${models_path}/${Inflect.dasherize(Inflect.singularize(table_name))}.js`;
 
+            let generate_slug = '';
+            let testing_slug = '';
+            if (args.includes('endpoint')) {
+                generate_slug = `\n\t\t\tthis.attributes.slug = this.attributes.slug || Gimmea.slug(this.attributes.id, 8);`;
+                testing_slug = `\n\t\tslug: Values.word(),`;
+            }
+
             saveTemplate('model.js', {
                 table: table_name,
-                model: Inflect.classify(name.replace('-', '_'))
+                model: Inflect.classify(name.replace('-', '_')),
+                generate_slug: generate_slug
             }, model_path);
             Log.info("Created model", Log.bold(justFilename(model_path, models_path)));
             files = files.concat(model_path);
@@ -134,7 +154,7 @@ const Generate = {
             // Add the model to the testing forge
             let testing_template = `\nTesting.forge{{MODEL_CLASS}} = (details) => {
     let properties = _.assign({}, {
-        id: Testing.uuid(),
+        id: Testing.uuid(),{{TESTING_SLUG}}
         // TODO: Add any other required fields
     }, details);
 
@@ -152,9 +172,11 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             testing = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_REQUIRE}}');\n` + testing;
 
             saveTemplate(testing, {
-                model_class: Inflect.classify(name.replace('-', '_')),
-                model_require: Inflect.dasherize(name.toLowerCase().replace(' ', '_'))
+                model_class: Inflect.classify(Inflect.singularize(name.replace('-', '_'))),
+                model_require: Inflect.dasherize(Inflect.singularize(name.toLowerCase().replace(' ', '_'))),
+                testing_slug: testing_slug
             }, testing_path);
+            Log.warning('Modified', Log.bold('test/testing.js'));
             files = files.concat(testing_path);
 
             return resolve(files);
@@ -181,7 +203,15 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             // Generate the routes
             let route = Inflect.dasherize(Inflect.pluralize(name));
             let route_path = `${routes_path}/${route}-routes.js`;
-            saveTemplate('routes.js', { route: route }, route_path);
+            
+            let template = (args.includes('endpoint') ? 'routes-endpoint.js' : 'routes.js');
+            
+            saveTemplate(template, { 
+                route: route,
+                model_class: Inflect.classify(name.replace('-', '_')),
+                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_'))),
+                models_lowercase: Inflect.pluralize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
+            }, route_path);
             Log.info("Created routes", Log.bold(justFilename(route_path, routes_path)));
 
             return resolve([route_path]);
@@ -196,6 +226,11 @@ Testing.create{{MODEL_CLASS}} = (details) => {
         let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
 
         return new Promise((resolve, reject) => {
+            if (args.length == 0) {
+                Log.error('No name specified');
+                return reject(new Error('No name specified'));
+            }
+            
             if (args.includes('no-tests')) {
                 Log.muted('Skipped creating tests');
                 return resolve([]);
@@ -207,12 +242,71 @@ Testing.create{{MODEL_CLASS}} = (details) => {
 
             let route = Inflect.dasherize(Inflect.pluralize(name));
             let route_test_path = `${routes_tests_path}/${route}-routes-test.js`;
-            saveTemplate('routes-test.js', {
-                route: route
+            
+            let template = (args.includes('endpoint') ? 'routes-endpoint-test.js' : 'routes-test.js');
+            
+            saveTemplate(template, {
+                route: route,
+                model_class: Inflect.classify(name.replace('-', '_')),
+                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_'))),
+                models_lowercase: Inflect.pluralize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
             }, route_test_path);
             Log.info("Created test", Log.bold(justFilename(route_test_path, routes_tests_path)));
 
             return resolve([route_test_path]);
+        });
+    },
+    
+    
+    prerequisite (config, args) {
+        config = config || {};
+        args = flags(args);
+        
+        let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
+        
+        return new Promise((resolve, reject) => {
+            if (args.length == 0) {
+                Log.error('No name specified');
+                return reject(new Error('No name specified'));
+            }
+            
+            if (args.includes('no-prerequisite')) {
+                Log.muted('Skipped creating prerequisite');
+                return resolve([]);
+            }
+            
+            let prerequisite_method_template = `},
+    
+    
+    {{MODEL_LOWERCASE}} (request, reply) {
+        if (!request.params.{{MODEL_LOWERCASE}}) return reply();
+
+        let id_or_slug = Validator.isUUID(request.params.{{MODEL_LOWERCASE}}) ? 'id' : 'slug';
+        {{MODEL_CLASS}}.where({ [id_or_slug]: request.params.{{MODEL_LOWERCASE}} }).fetch().then(({{MODEL_LOWERCASE}}) => {
+            reply({{MODEL_LOWERCASE}});
+        }).catch((err) => {
+            reply();
+        });
+    }
+}
+    
+    
+module.exports = Prerequisites;`;
+    
+            let name = args[0].toLowerCase();
+            let prerequisites_path = Path.resolve(`${app_root}/app/server/prerequisites.js`);
+            let prerequisites = FS.readFileSync(prerequisites_path, 'utf8');
+            
+            prerequisites = prerequisites.replace(/}[,\s]*?}[;\s]*?module\.exports = Prerequisites;/, prerequisite_method_template);
+            prerequisites = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE}}');\nconst {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE}}-resource');\n${prerequisites}`;
+            
+            saveTemplate(prerequisites, {
+                model_class: Inflect.classify(name.replace('-', '_')),
+                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
+            }, prerequisites_path);
+            Log.warning('Modified', Log.bold('app/server/prerequisites.js'));
+            
+            return resolve([prerequisites_path]);
         });
     },
 
@@ -233,15 +327,23 @@ Testing.create{{MODEL_CLASS}} = (details) => {
                 Log.muted('Skipped creating resource');
                 return resolve([]);
             }
+            
+            
 
             let name = args[0].toLowerCase();
             let resources_path = Path.resolve(`${app_root}/app/server/resources`);
             FS.mkdirsSync(resources_path);
+            
+            let slug = '';
+            if (args.includes('endpoint')) {
+                slug = `,\n\t\tslug: ${Inflect.underscore(Inflect.singularize(name))}.slug`;
+            }
 
             let resource = Inflect.dasherize(Inflect.singularize(name));
             let resource_path = `${resources_path}/${resource}-resource.js`;
             saveTemplate('resource.js', { 
-                model: Inflect.underscore(Inflect.singularize(name))
+                model: Inflect.underscore(Inflect.singularize(name)),
+                slug: slug
             }, resource_path);
             Log.info("Created resource", Log.bold(justFilename(resource_path, resources_path)));
 
@@ -584,6 +686,7 @@ module.exports.migration = Generate.migration;
 
 module.exports.model = combine([Generate.model, Generate.migration], {}, ['model']);
 module.exports.routes = combine([Generate.routes, Generate.routesTests, Generate.resource]);
+module.exports.endpoint = combine([Generate.model, Generate.migration, Generate.routes, Generate.routesTests, Generate.resource, Generate.prerequisite], {}, ['model', 'endpoint']);
 module.exports.resource = Generate.resource;
 module.exports.notification = Generate.notification;
 

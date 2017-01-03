@@ -45,7 +45,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     });
     
     
-    lab.test('it can load {{PLURAL_LOWERCASE}}', (done) => {
+    lab.test('can load {{PLURAL_LOWERCASE}}', (done) => {
         Nock(URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, {{PLURAL_LOWERCASE}});
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
@@ -76,7 +76,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     });
     
     
-    lab.test('it can load a {{SINGLE_LOWERCASE}}', (done) => {
+    lab.test('can load a {{SINGLE_LOWERCASE}}', (done) => {
         Nock(URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
         
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
@@ -107,7 +107,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     });
     
     
-    lab.test('it can create a {{SINGLE_LOWERCASE}}', (done) => {
+    lab.test('can create a new {{SINGLE_LOWERCASE}}', (done) => {
         let new_{{SINGLE_LOWERCASE}} = {
             name: 'New {{SINGLE_CLASS}}'
         };
@@ -140,6 +140,76 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.CREATING_{{SINGLE_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.CREATING_{{SINGLE_CONSTANT}}_FAILED);
+                
+            done();
+        });
+    });
+    
+    
+    lab.test('can update a given {{SINGLE_LOWERCASE}}', (done) => {
+        let updating_{{SINGLE_LOWERCASE}} = {
+            name: 'Updated {{SINGLE_CLASS}}'
+        };
+        
+        Nock(URL).put('/app/{{PLURAL_LOWERCASE}}/slug').reply(200, {{SINGLE_CLASS}}Resource.public(updating_{{SINGLE_LOWERCASE}}));
+        
+        store.dispatch(Actions.update{{SINGLE_CLASS}}('slug', updating_{{SINGLE_LOWERCASE}})).then(() => {
+            let actions = store.getActions();
+            
+            expect(actions.length).to.equal(2);
+            expect(actions[0].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}});
+            expect(actions[1].type).to.equal(Actions.UPDATED_{{SINGLE_CONSTANT}});
+            expect(actions[1].payload).to.be.an.object();
+            
+            done();
+        });
+    });
+    
+    
+    lab.test('updating a given {{SINGLE_LOWERCASE}} can fail', (done) => {
+        let updating_{{SINGLE_LOWERCASE}} = {
+            name: 'Updated {{SINGLE_CLASS}}'
+        };
+        
+        Nock(URL).put('/app/{{PLURAL_LOWERCASE}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Updating {{SINGLE_LOWERCASE}} failed' });
+        
+        store.dispatch(Actions.update{{SINGLE_CLASS}}(updating_{{SINGLE_LOWERCASE}})).then(() => {
+            let actions = store.getActions();
+            
+            expect(actions.length).to.equal(2);
+            expect(actions[0].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}});
+            expect(actions[1].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}}_FAILED);
+                
+            done();
+        });
+    });
+    
+    
+    lab.test('can delete a given {{SINGLE_LOWERCASE}}', (done) => {
+        Nock(URL).delete('/app/{{PLURAL_LOWERCASE}}/slug').reply(200, {});
+        
+        store.dispatch(Actions.delete{{SINGLE_CLASS}}('slug')).then(() => {
+            let actions = store.getActions();
+            
+            expect(actions.length).to.equal(2);
+            expect(actions[0].type).to.equal(Actions.DELETING_{{SINGLE_CONSTANT}});
+            expect(actions[1].type).to.equal(Actions.DELETED_{{SINGLE_CONSTANT}});
+            expect(actions[1].payload).to.be.an.object();
+            
+            done();
+        });
+    });
+    
+    
+    lab.test('deleting a given {{SINGLE_LOWERCASE}} can fail', (done) => {
+        Nock(URL).delete('/app/{{PLURAL_LOWERCASE}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Deleting {{SINGLE_LOWERCASE}} failed' });
+        
+        store.dispatch(Actions.delete{{SINGLE_CLASS}}('slug')).then(() => {
+            let actions = store.getActions();
+            
+            expect(actions.length).to.equal(2);
+            expect(actions[0].type).to.equal(Actions.DELETING_{{SINGLE_CONSTANT}});
+            expect(actions[1].type).to.equal(Actions.DELETING_{{SINGLE_CONSTANT}}_FAILED);
                 
             done();
         });

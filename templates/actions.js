@@ -18,7 +18,11 @@ const Constants = Tokeys([
     
     'UPDATING_{{SINGLE_CONSTANT}}',
     'UPDATING_{{SINGLE_CONSTANT}}_FAILED',
-    'UPDATED_{{SINGLE_CONSTANT}}'
+    'UPDATED_{{SINGLE_CONSTANT}}',
+    
+    'DELETING_{{SINGLE_CONSTANT}}',
+    'DELETING_{{SINGLE_CONSTANT}}_FAILED',
+    'DELETED_{{SINGLE_CONSTANT}}'
 ]);
 
 
@@ -87,6 +91,48 @@ const Actions = {
     created{{SINGLE_CLASS}} ({{SINGLE_LOWERCASE}}) {
         return {
             type: Constants.CREATED_{{SINGLE_CONSTANT}},
+            payload: {{SINGLE_LOWERCASE}}
+        }
+    },
+    
+    
+    update{{SINGLE_CLASS}} (slug, payload) {
+        return (dispatch, getState) => {
+            dispatch({ type: Constants.UPDATING_{{SINGLE_CONSTANT}} });
+            
+            return API.put(`/app/{{PLURAL_LOWERCASE}}/${slug}`, payload).then(({{SINGLE_LOWERCASE}}) => {
+                dispatch(Actions.updated{{SINGLE_CLASS}}({{SINGLE_LOWERCASE}}));
+            }).catch((err) => {
+                dispatch({ type: Constants.UPDATING_{{SINGLE_CONSTANT}}_FAILED, payload: err });
+            });
+        }
+    },
+    
+    
+    updated{{SINGLE_CLASS}} ({{SINGLE_LOWERCASE}}) {
+        return {
+            type: Constants.UPDATED_{{SINGLE_CONSTANT}},
+            payload: {{SINGLE_LOWERCASE}}
+        }
+    },
+    
+    
+    delete{{SINGLE_CLASS}} (slug) {
+        return (dispatch, getState) => {
+            dispatch({ type: Constants.DELETING_{{SINGLE_CONSTANT}} });
+            
+            return API.delete(`/app/{{PLURAL_LOWERCASE}}/${slug}`).then(({{SINGLE_LOWERCASE}}) => {
+                dispatch(Actions.deleted{{SINGLE_CLASS}}({{SINGLE_LOWERCASE}}));
+            }).catch((err) => {
+                dispatch({ type: Constants.DELETING_{{SINGLE_CONSTANT}}_FAILED, payload: err });
+            });
+        }
+    },
+    
+    
+    deleted{{SINGLE_CLASS}} ({{SINGLE_LOWERCASE}}) {
+        return {
+            type: Constants.DELETED_{{SINGLE_CONSTANT}},
             payload: {{SINGLE_LOWERCASE}}
         }
     }

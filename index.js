@@ -88,6 +88,7 @@ Suddenly.prototype.handleTasks = function (config, argv) {
     suddenly.defaultTask('generate:model', Generate.model);
     suddenly.defaultTask('generate:routes', Generate.routes);
     suddenly.defaultTask('generate:resource', Generate.resource);
+    suddenly.defaultTask('generate:endpoint', Generate.endpoint);
     suddenly.defaultTask('generate:notification', Generate.notification);
     
     if (!config.APP_ROOT) config.APP_ROOT = APP_ROOT;
@@ -97,8 +98,8 @@ Suddenly.prototype.handleTasks = function (config, argv) {
     if (task) {
         return task(config, argv.slice(3));
     } else {
-        Log.error(task_name, Log.bold(task_name), 'is not defined');
-        Log.error(task_name, Log.gray('You can define it in'), Log.gray.bold('bin/suddenly'));
+        Log.error(Log.bold(task_name), 'is not defined');
+        Log.error(Log.gray('You can define it in'), Log.gray.bold('bin/suddenly'));
         process.exit();
     }
 };

@@ -27,6 +27,8 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
             {{PLURAL_LOWERCASE}}_error: null,
             is_loading_{{SINGLE_LOWERCASE}}: false,
             is_creating_{{SINGLE_LOWERCASE}}: false,
+            is_updating_{{SINGLE_LOWERCASE}}: false,
+            is_deleting_{{SINGLE_LOWERCASE}}: false,
             {{SINGLE_LOWERCASE}}_error: null,
             by_slug: _.keyBy({{PLURAL_LOWERCASE}}, 'slug')
         });
@@ -183,6 +185,98 @@ lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {
         state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.CREATING_{{SINGLE_CONSTANT}}_FAILED, payload: new Error('Error') });
         
         expect(state.get('is_creating_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal({{PLURAL_LOWERCASE}}.length);
+        expect(state.get('{{SINGLE_LOWERCASE}}_error').message).to.equal('Error');
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle UPDATING_{{SINGLE_CONSTANT}}", (done) => {
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}} });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.true();
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}} });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.true();
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle UPDATED_{{SINGLE_CONSTANT}}", (done) => {
+        let {{SINGLE_LOWERCASE}} = {{PLURAL_LOWERCASE}}[0];
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.UPDATED_{{SINGLE_CONSTANT}}, payload: {{SINGLE_LOWERCASE}} });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal(1);
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.UPDATED_{{SINGLE_CONSTANT}}, payload: {{SINGLE_LOWERCASE}} });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal({{PLURAL_LOWERCASE}}.length);
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle UPDATING_{{SINGLE_CONSTANT}}_FAILED", (done) => {
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}}_FAILED, payload: new Error('Error') });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal(0);
+        expect(state.get('{{SINGLE_LOWERCASE}}_error').message).to.equal('Error');
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}}_FAILED, payload: new Error('Error') });
+        
+        expect(state.get('is_updating_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal({{PLURAL_LOWERCASE}}.length);
+        expect(state.get('{{SINGLE_LOWERCASE}}_error').message).to.equal('Error');
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle DELETING_{{SINGLE_CONSTANT}}", (done) => {
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}} });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.true();
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}} });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.true();
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle DELETED_{{SINGLE_CONSTANT}}", (done) => {
+        let {{SINGLE_LOWERCASE}} = {{PLURAL_LOWERCASE}}[0];
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.DELETED_{{SINGLE_CONSTANT}}, payload: {{SINGLE_LOWERCASE}} });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal(0);
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.DELETED_{{SINGLE_CONSTANT}}, payload: {{SINGLE_LOWERCASE}} });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal({{PLURAL_LOWERCASE}}.length - 1);
+        
+        done();
+    });
+    
+    
+    lab.test("it should handle DELETING_{{SINGLE_CONSTANT}}_FAILED", (done) => {
+        let state = reducer(undefined, { type: {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}}_FAILED, payload: new Error('Error') });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.false();
+        expect(state.get('by_slug').count()).to.equal(0);
+        expect(state.get('{{SINGLE_LOWERCASE}}_error').message).to.equal('Error');
+        
+        state = reducer(initial_state, { type: {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}}_FAILED, payload: new Error('Error') });
+        
+        expect(state.get('is_deleting_{{SINGLE_LOWERCASE}}')).to.be.false();
         expect(state.get('by_slug').count()).to.equal({{PLURAL_LOWERCASE}}.length);
         expect(state.get('{{SINGLE_LOWERCASE}}_error').message).to.equal('Error');
         

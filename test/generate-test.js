@@ -150,10 +150,8 @@ lab.experiment('Generate', () => {
     
     lab.suite('routes', () => {
         lab.beforeEach((done) => {
-            FS.mkdirs(`${__dirname}/../tmp/app/server/routes`, () => {
-                FS.mkdirs(`${__dirname}/../tmp/test/routes`, () => {
-                    done();
-                });
+            FS.copy(`${__dirname}/generate`, `${__dirname}/../tmp`, (err) => {
+                done();
             });
         });
         
@@ -244,6 +242,33 @@ lab.experiment('Generate', () => {
     });
     
     
+    lab.suite('endpoint', () => {
+        lab.beforeEach((done) => {
+            FS.copy(`${__dirname}/generate`, `${__dirname}/../tmp`, (err) => {
+                done();
+            });
+        });
+        
+        
+        lab.test('can generate a resource route file', (done) => {
+            Generate.endpoint(config, ['things']).then((files) => {
+                expect(files).to.be.an.array();
+                expect(files.length).to.equal(7);
+                
+                expect(files[0]).to.contain('app/server/models/thing.js');
+                expect(files[1]).to.contain('test/testing.js');
+                expect(files[2]).to.contain('_create-things.js');
+                expect(files[3]).to.contain('app/server/routes/things-routes.js');
+                expect(files[4]).to.contain('test/routes/things-routes-test.js');
+                expect(files[5]).to.contain('app/server/resources/thing-resource.js');
+                expect(files[6]).to.contain('app/server/prerequisites.js');
+                
+                done();
+            });
+        });
+    });
+    
+    
     lab.suite('notifications', () => {
         lab.beforeEach((done) => {
             FS.mkdirs(`${__dirname}/../tmp/app/server/notifications`, () => {
@@ -320,6 +345,9 @@ lab.experiment('Generate', () => {
                 expect(actions_file_contents).to.include("'UPDATING_THING'");
                 expect(actions_file_contents).to.include("'UPDATING_THING_FAILED'");
                 expect(actions_file_contents).to.include("'UPDATED_THING'");
+                expect(actions_file_contents).to.include("'DELETING_THING'");
+                expect(actions_file_contents).to.include("'DELETING_THING_FAILED'");
+                expect(actions_file_contents).to.include("'DELETED_THING'");
                 
                 expect(actions_file_contents).to.include("loadThings () {");
                 expect(actions_file_contents).to.include("loadedThings (things) {");
@@ -327,6 +355,10 @@ lab.experiment('Generate', () => {
                 expect(actions_file_contents).to.include("loadedThing (thing) {");
                 expect(actions_file_contents).to.include("createThing (payload) {");
                 expect(actions_file_contents).to.include("createdThing (thing) {");
+                expect(actions_file_contents).to.include("updateThing (slug, payload) {");
+                expect(actions_file_contents).to.include("updatedThing (thing) {");
+                expect(actions_file_contents).to.include("deleteThing (slug) {");
+                expect(actions_file_contents).to.include("deletedThing (thing) {");
                 
                 // Test
                 var test_file_contents = FS.readFileSync(files[1], "utf8");

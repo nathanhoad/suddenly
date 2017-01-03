@@ -8,6 +8,8 @@ const initial_state = Immutable.fromJS({
     {{PLURAL_LOWERCASE}}_error: null,
     is_loading_{{SINGLE_LOWERCASE}}: false,
     is_creating_{{SINGLE_LOWERCASE}}: false,
+    is_updating_{{SINGLE_LOWERCASE}}: false,
+    is_deleting_{{SINGLE_LOWERCASE}}: false,
     {{SINGLE_LOWERCASE}}_error: null,
     by_slug: {}
 });
@@ -70,6 +72,44 @@ function {{PLURAL_LOWERCASE}} (state, action) {
             state = state.setIn(['by_slug', created_{{SINGLE_LOWERCASE}}.get('slug')], created_{{SINGLE_LOWERCASE}});
             return state.merge({
                 is_creating_{{SINGLE_LOWERCASE}}: false,
+                {{SINGLE_LOWERCASE}}_error: null
+            });
+        
+        case {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}}:
+            return state.merge({
+                is_updating_{{SINGLE_LOWERCASE}}: true
+            });
+        
+        case {{SINGLE_CLASS}}Actions.UPDATING_{{SINGLE_CONSTANT}}_FAILED:
+            return state.merge({
+                is_updating_{{SINGLE_LOWERCASE}}: false,
+                {{SINGLE_LOWERCASE}}_error: action.payload
+            });
+        
+        case {{SINGLE_CLASS}}Actions.UPDATED_{{SINGLE_CONSTANT}}:
+            let updated_{{SINGLE_LOWERCASE}} = Immutable.fromJS(action.payload);
+            state = state.setIn(['by_slug', updated_{{SINGLE_LOWERCASE}}.get('slug')], updated_{{SINGLE_LOWERCASE}});
+            return state.merge({
+                is_updating_{{SINGLE_LOWERCASE}}: false,
+                {{SINGLE_LOWERCASE}}_error: null
+            });
+
+        case {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}}:
+            return state.merge({
+                is_deleting_{{SINGLE_LOWERCASE}}: true
+            });
+        
+        case {{SINGLE_CLASS}}Actions.DELETING_{{SINGLE_CONSTANT}}_FAILED:
+            return state.merge({
+                is_deleting_{{SINGLE_LOWERCASE}}: false,
+                {{SINGLE_LOWERCASE}}_error: action.payload
+            });
+        
+        case {{SINGLE_CLASS}}Actions.DELETED_{{SINGLE_CONSTANT}}:
+            let deleted_{{SINGLE_LOWERCASE}} = Immutable.fromJS(action.payload);
+            state = state.deleteIn(['by_slug', deleted_{{SINGLE_LOWERCASE}}.get('slug')]);
+            return state.merge({
+                is_deleting_{{SINGLE_LOWERCASE}}: false,
                 {{SINGLE_LOWERCASE}}_error: null
             });
         
