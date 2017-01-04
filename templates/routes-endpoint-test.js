@@ -92,7 +92,11 @@ lab.experiment('{{ROUTE}}-routes', () => {
         
         
         lab.test('can create a new {{MODEL_LOWERCASE}}', (done) => {
-            Server.inject({ method: 'post', url: '/app/{{ROUTE}}', payload: {}, headers: headers }, (response) => {
+            let new_{{MODEL_LOWERCASE}} = {
+                // TODO: add some actual properties
+            };
+            
+            Server.inject({ method: 'post', url: '/app/{{ROUTE}}', payload: new_{{MODEL_LOWERCASE}}, headers: headers }, (response) => {
                 expect(response.statusCode).to.equal(200);
                 
                 let {{MODEL_LOWERCASE}} = response.result;
@@ -133,7 +137,8 @@ lab.experiment('{{ROUTE}}-routes', () => {
         
         lab.test('can update a given {{MODEL_LOWERCASE}}', (done) => {
             let updating_to = {
-                slug: 'new-slug'
+                slug: 'new-slug',
+                // TODO: add some actual properties
             };
             
             Server.inject({ method: 'put', url: `/app/{{ROUTE}}/${existing_{{MODEL_LOWERCASE}}.get('slug')}`, payload: updating_to, headers: headers }, (response) => {
