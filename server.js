@@ -22,6 +22,19 @@ module.exports.routes = (server, config) => {
             Log.error(err.stack);
         }
     });
+    
+    // Boom errors that have data should pass that data to the response
+    server.ext('onPreResponse', (request, reply) => {
+        let response = request.response;
+        
+        if (!response.isBoom) return reply.continue();
+        
+        if (response.data) {
+            response.output.payload.data = response.data;
+        }
+        
+        return reply(response);
+    });
 
     // Set up asset routes
     server.register(Inert, function () {});
