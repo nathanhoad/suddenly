@@ -1,10 +1,14 @@
 module.exports = {
     up (knex, Promise) {
-        // TODO: return a Promise, eg. knex.schema.table
+        return knex.schema.table('{{TABLE}}', (table) => {
+            {{ADD_COLUMNS}}
+        });
     },
 
 
     down (knex, Promise) {
-        // TODO: return a Promise, eg. knex.schema.table
+        return knex.schema.table('{{TABLE}}', (table) => {
+            {{DROP_COLUMNS}}
+        });
     }
 };

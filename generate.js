@@ -77,7 +77,9 @@ const Generate = {
 
             let knex = setupKnex(config);
             let name = args[0].replace(/\s/g, '-');
-
+            
+            let table_name = Inflect.tableize(name);
+            
             let migration_name = Inflect.dasherize(name);
             let migration_template = 'migration.js';
             if (args.includes('model')) {
@@ -91,10 +93,31 @@ const Generate = {
                 define_slug = `table.string('slug');\n\t\t\t`;
                 slug_index = `\n\t\t\ttable.index('slug');`;
             }
+            
+            // Try to guess the intent of the migration
+            let add_columns = '';
+            let drop_columns = '';
+            if (!args.includes('model') && !args.includes('endpoint')) {
+                let matches = name.match(/^add\-(.*?)-to-(.*?)$/);
+                if (matches && matches.length == 3) {
+                    table_name = matches[2];
+                    
+                    let columns = matches[1].split('-and-');
+                    add_columns = columns.map(c => {
+                        return `table.string('${c}');`;
+                    }).join('\n\t\t\t');
+                    
+                    drop_columns = `table.dropColumns(${columns.map(c => `'${c}'`).join()});`;
+                } else {
+                    table_name = name.split('-')[name.split('-').length - 1];
+                }
+            }
 
             knex.migrate.make(migration_name, options).then((migration_path) => {
                 saveTemplate(migration_template, {
-                    table: Inflect.tableize(name),
+                    table: table_name,
+                    add_columns: add_columns,
+                    drop_columns: drop_columns,
                     define_slug: define_slug,
                     slug_index: slug_index
                 }, migration_path);
