@@ -84,7 +84,12 @@ module.exports = (config, args) => {
     };
 
     if (PRODUCTION && !args.includes('no-uglify')) {
-        webpack_config.plugins.push(new BabiliPlugin());
+        webpack_config.plugins.push(new Webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            sourceMap: false
+        }));
     }
     
     return webpack_config;
