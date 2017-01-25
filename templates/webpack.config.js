@@ -5,7 +5,6 @@ const Webpack = require('webpack');
 const AutoPrefixer = require('autoprefixer');
 const HtmlPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const BabiliPlugin = require("babili-webpack-plugin");
 
 const APP_ROOT = require('app-root-path').toString();
 const PRODUCTION = (process.env.NODE_ENV == 'production');
