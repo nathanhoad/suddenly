@@ -102,7 +102,7 @@ const Generate = {
                 if (matches && matches.length == 3) {
                     table_name = matches[2];
                     
-                    let columns = matches[1].split('-and-');
+                    let columns = matches[1].split('-and-').map(c => Inflect.underscore(c));
                     add_columns = columns.map(c => {
                         return `table.string('${c}');`;
                     }).join('\n\t\t\t');

@@ -46,14 +46,14 @@ lab.experiment('Generate', () => {
         
         lab.suite('generates a migration file and guesses the intent', () => {
             lab.test('with one field', (done) => {
-                Generate.migration(config, ['add-name-to-users']).then((files) => {
+                Generate.migration(config, ['add-full-name-to-users']).then((files) => {
                     expect(files).to.be.an.array();
                     expect(files.length).to.equal(1);
                     
                     var file_contents = FS.readFileSync(files[0], "utf8");
                     
                     expect(file_contents).to.include(`return knex.schema.table('users', (table) => {`);
-                    expect(file_contents).to.include(`table.string('name')`);
+                    expect(file_contents).to.include(`table.string('full_name')`);
                     
                     done();
                 }).catch((err) => {
