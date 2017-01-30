@@ -1,6 +1,5 @@
 const Boom = require('boom');
 const Joi = require('joi');
-const JWT = require('jsonwebtoken');
 const Prerequisites = require('app/server/prerequisites');
 const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE}}');
 const {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE}}-resource');
@@ -33,7 +32,7 @@ module.exports = [
                 payload: Joi.object({
                     // Add in payload validation
                     // ...
-               }).options({ abortEarly: false })
+               }).options({ abortEarly: false, stripUnknown: true })
             },
             handler (request, reply) {
                 {{MODEL_CLASS}}.create(request.payload).then(({{MODEL_LOWERCASE}}) => {
@@ -67,7 +66,7 @@ module.exports = [
                     slug: Joi.string().allow(null),
                     // Add in payload validation
                     // ...
-                }).options({ abortEarly: false })
+                }).options({ abortEarly: false, stripUnknown: true })
             },
             pre: Prerequisites.use('{{MODEL_LOWERCASE}}'),
             handler (request, reply) {

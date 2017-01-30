@@ -2,7 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/nathanhoad/suddenly.svg?style=svg)](https://circleci.com/gh/nathanhoad/suddenly)
 
-A bunch of tools to help with Suddenly apps
+A bunch of tools to help with Suddenly apps.
+
+To generate a new Suddenly app, check out: [suddenly-cli](https://www.npmjs.com/package/suddenly-cli)
 
 
 ## Usage
