@@ -2,7 +2,6 @@ const Lab = require('lab');
 const Nock = require('nock');
 const Testing = require('../testing');
 const Immutable = require('immutable');
-const Config = require('app/config/public');
 const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE}}-resource');
 
 const { expect } = require('code');
@@ -21,12 +20,14 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     lab.beforeEach((done) => {
         store = Testing.mockStore(Immutable.fromJS({
-            is_loading_{{PLURAL_LOWERCASE}}: false,
-            {{PLURAL_LOWERCASE}}_error: null,
-            is_loading_{{SINGLE_LOWERCASE}}: false,
-            is_creating_{{SINGLE_LOWERCASE}}: false,
-            {{SINGLE_LOWERCASE}}_error: null,
-            by_slug: {}
+            {{PLURAL_LOWERCASE}}: {
+                is_loading_{{PLURAL_LOWERCASE}}: false,
+                {{PLURAL_LOWERCASE}}_error: null,
+                is_loading_{{SINGLE_LOWERCASE}}: false,
+                is_creating_{{SINGLE_LOWERCASE}}: false,
+                {{SINGLE_LOWERCASE}}_error: null,
+                by_id: {}
+            }
         }));
         
         {{PLURAL_LOWERCASE}} = [
@@ -51,10 +52,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.LOADING_{{PLURAL_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.LOADED_{{PLURAL_CONSTANT}});
-            expect(actions[1].payload.length).to.equal({{PLURAL_LOWERCASE}}.length);
+            expect(actions[1].payload.count()).to.equal({{PLURAL_LOWERCASE}}.length);
                 
             done();
         });
@@ -67,9 +67,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.LOADING_{{PLURAL_CONSTANT}});
-            expect(actions[1].type).to.equal(Actions.LOADING_{{PLURAL_CONSTANT}}_FAILED);
+            expect(actions[1].type).to.equal(Actions.LOADED_{{PLURAL_CONSTANT}});
+            expect(actions[1].error).to.be.an.instanceof(Error);
                 
             done();
         });
@@ -82,10 +82,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.LOADING_{{SINGLE_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.LOADED_{{SINGLE_CONSTANT}});
-            expect(actions[1].payload.name).to.equal({{PLURAL_LOWERCASE}}[0].name);
+            expect(actions[1].payload.get('name')).to.equal({{PLURAL_LOWERCASE}}[0].name);
                 
             done();
         });
@@ -98,9 +97,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.LOADING_{{SINGLE_CONSTANT}});
-            expect(actions[1].type).to.equal(Actions.LOADING_{{SINGLE_CONSTANT}}_FAILED);
+            expect(actions[1].type).to.equal(Actions.LOADED_{{SINGLE_CONSTANT}});
+            expect(actions[1].error).to.be.an.instanceof(Error);
                 
             done();
         });
@@ -117,7 +116,6 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.CREATING_{{SINGLE_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.CREATED_{{SINGLE_CONSTANT}});
             expect(actions[1].payload).to.be.an.object();
@@ -137,9 +135,8 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.CREATING_{{SINGLE_CONSTANT}});
-            expect(actions[1].type).to.equal(Actions.CREATING_{{SINGLE_CONSTANT}}_FAILED);
+            expect(actions[1].type).to.equal(Actions.CREATED_{{SINGLE_CONSTANT}});
                 
             done();
         });
@@ -156,7 +153,6 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.update{{SINGLE_CLASS}}('slug', updating_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}});
             expect(actions[1].type).to.equal(Actions.UPDATED_{{SINGLE_CONSTANT}});
             expect(actions[1].payload).to.be.an.object();
@@ -176,9 +172,9 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
         store.dispatch(Actions.update{{SINGLE_CLASS}}(updating_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
             
-            expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}});
-            expect(actions[1].type).to.equal(Actions.UPDATING_{{SINGLE_CONSTANT}}_FAILED);
+            expect(actions[1].type).to.equal(Actions.UPDATED_{{SINGLE_CONSTANT}});
+            expect(actions[1].error).to.be.an.instanceof(Error)
                 
             done();
         });
@@ -209,7 +205,8 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             
             expect(actions.length).to.equal(2);
             expect(actions[0].type).to.equal(Actions.DELETING_{{SINGLE_CONSTANT}});
-            expect(actions[1].type).to.equal(Actions.DELETING_{{SINGLE_CONSTANT}}_FAILED);
+            expect(actions[1].type).to.equal(Actions.DELETED_{{SINGLE_CONSTANT}});
+            expect(actions[1].error).to.be.an.instanceof(Error);
                 
             done();
         });

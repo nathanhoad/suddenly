@@ -38,8 +38,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
-                done();
+                console.log(err.stack);
             });
         });
         
@@ -57,7 +56,7 @@ lab.experiment('Generate', () => {
                     
                     done();
                 }).catch((err) => {
-                    console.log(err);
+                    console.log(err.stack);
                     done();
                 });
             });
@@ -76,7 +75,7 @@ lab.experiment('Generate', () => {
                     
                     done();
                 }).catch((err) => {
-                    console.log(err);
+                    console.log(err.stack);
                     done();
                 });
             });
@@ -125,7 +124,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -149,7 +148,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -169,7 +168,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -182,7 +181,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -225,7 +224,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -242,7 +241,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
+                console.log(err.stack);
                 done();
             });
         });
@@ -276,8 +275,7 @@ lab.experiment('Generate', () => {
                 
                 done();
             }).catch((err) => {
-                console.log(err);
-                done();
+                console.log(err.stack);
             });
         });
     });
@@ -343,7 +341,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
     });
@@ -375,31 +372,26 @@ lab.experiment('Generate', () => {
                 // Action
                 var actions_file_contents = FS.readFileSync(files[0], "utf8");
                 expect(actions_file_contents).to.include("'LOADING_THINGS'");
-                expect(actions_file_contents).to.include("'LOADING_THINGS_FAILED'");
                 expect(actions_file_contents).to.include("'LOADED_THINGS'");
                 expect(actions_file_contents).to.include("'LOADING_THING'");
-                expect(actions_file_contents).to.include("'LOADING_THING_FAILED'");
                 expect(actions_file_contents).to.include("'LOADED_THING'");
                 expect(actions_file_contents).to.include("'CREATING_THING'");
-                expect(actions_file_contents).to.include("'CREATING_THING_FAILED'");
                 expect(actions_file_contents).to.include("'CREATED_THING'");
                 expect(actions_file_contents).to.include("'UPDATING_THING'");
-                expect(actions_file_contents).to.include("'UPDATING_THING_FAILED'");
                 expect(actions_file_contents).to.include("'UPDATED_THING'");
                 expect(actions_file_contents).to.include("'DELETING_THING'");
-                expect(actions_file_contents).to.include("'DELETING_THING_FAILED'");
                 expect(actions_file_contents).to.include("'DELETED_THING'");
                 
-                expect(actions_file_contents).to.include("loadThings () {");
-                expect(actions_file_contents).to.include("loadedThings (things) {");
-                expect(actions_file_contents).to.include("loadThing (slug) {");
-                expect(actions_file_contents).to.include("loadedThing (thing) {");
-                expect(actions_file_contents).to.include("createThing (payload) {");
-                expect(actions_file_contents).to.include("createdThing (thing) {");
-                expect(actions_file_contents).to.include("updateThing (slug, payload) {");
-                expect(actions_file_contents).to.include("updatedThing (thing) {");
-                expect(actions_file_contents).to.include("deleteThing (slug) {");
-                expect(actions_file_contents).to.include("deletedThing (thing) {");
+                expect(actions_file_contents).to.include("Actions.loadThings = () => {");
+                expect(actions_file_contents).to.include("Actions.loadedThings = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.loadThing = (slug) => {");
+                expect(actions_file_contents).to.include("Actions.loadedThing = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.createThing = (payload) => {");
+                expect(actions_file_contents).to.include("Actions.createdThing = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.updateThing = (slug, payload) => {");
+                expect(actions_file_contents).to.include("Actions.updatedThing = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.deleteThing = (slug) => {");
+                expect(actions_file_contents).to.include("Actions.deletedThing = (error, payload) => {");
                 
                 // Test
                 var test_file_contents = FS.readFileSync(files[1], "utf8");
@@ -408,7 +400,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
         
@@ -425,14 +416,13 @@ lab.experiment('Generate', () => {
                 expect(actions_file_contents).to.include("'CREATING_THING'");
                 expect(actions_file_contents).to.include("'UPDATING_THING'");
                 
-                expect(actions_file_contents).to.include("loadThings () {");
-                expect(actions_file_contents).to.include("loadThing (slug) {");
-                expect(actions_file_contents).to.include("createThing (payload) {");
+                expect(actions_file_contents).to.include("Actions.loadThings = () => {");
+                expect(actions_file_contents).to.include("Actions.loadThing = (slug) => {");
+                expect(actions_file_contents).to.include("Actions.createThing = (payload) => {");
                 
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
     });
@@ -461,7 +451,7 @@ lab.experiment('Generate', () => {
                 
                 // Reducer
                 var reducer_file_contents = FS.readFileSync(files[0], "utf8");
-                expect(reducer_file_contents).to.include("function things (state, action) {");
+                expect(reducer_file_contents).to.include("module.exports = reducer(initial_state, {");
                 
                 // Adds reducer to the index
                 var reducer_index_file_contents = FS.readFileSync(files[1], "utf8");
@@ -475,7 +465,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                expect(err).to.be.null();
                 done();
             });
         });
@@ -488,7 +477,7 @@ lab.experiment('Generate', () => {
                 
                 // Reducer
                 var reducer_file_contents = FS.readFileSync(files[0], "utf8");
-                expect(reducer_file_contents).to.include("function things (state, action) {");
+                expect(reducer_file_contents).to.include("module.exports = reducer(initial_state, {");
                 
                 // Adds reducer to the index
                 var reducer_index_file_contents = FS.readFileSync(files[1], "utf8");
@@ -498,8 +487,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                expect(err).to.be.null();
-                done();
             });
         });
     });
@@ -574,7 +561,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
         
@@ -601,7 +587,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
     });
@@ -635,7 +620,6 @@ lab.experiment('Generate', () => {
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
     });
