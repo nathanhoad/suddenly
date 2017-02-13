@@ -436,10 +436,10 @@ module.exports = Prerequisites;`;
             saveTemplate('actions.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                single_class: Inflect.camelize(Inflect.singularize(name)),
+                single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, action_path);
             Log.info("Created actions", Log.bold(justFilename(action_path, actions_path)));
 
@@ -474,10 +474,10 @@ module.exports = Prerequisites;`;
             saveTemplate('actions-test.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                single_class: Inflect.camelize(Inflect.singularize(name)),
+                single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, test_path);
             Log.info("Created test", Log.bold(justFilename(test_path, tests_path)));
 
@@ -510,10 +510,10 @@ module.exports = Prerequisites;`;
             saveTemplate('reducer.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                single_class: Inflect.camelize(Inflect.singularize(name))
+                single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, reducer_path);
             Log.info("Created reducer", Log.bold(justFilename(reducer_path, reducers_path)));
             files.push(reducer_path);
@@ -525,7 +525,7 @@ module.exports = Prerequisites;`;
             let reducer_name = Inflect.underscore(Inflect.pluralize(name)).toLowerCase();
 
             let line_index = reducers_index.findIndex(line => line.match(/^const ReduxImmutable/));
-            reducers_index.splice(line_index + 2, 0, `const ${reducer_name} = require('./${reducer_name}-reducer');`);
+            reducers_index.splice(line_index + 2, 0, `const ${reducer_name} = require('./${Inflect.dasherize(reducer_name)}-reducer');`);
             line_index = reducers_index.findIndex(line => line.match(/ReduxImmutable\.combineReducers/));
             reducers_index.splice(line_index + 1, 0, `\t${reducer_name},`);
             FS.writeFileSync(reducers_index_path, reducers_index.join('\n'));
@@ -562,10 +562,10 @@ module.exports = Prerequisites;`;
             saveTemplate('reducer-test.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
-                plural_class: Inflect.camelize(Inflect.pluralize(name)),
+                plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
-                single_class: Inflect.camelize(Inflect.singularize(name))
+                single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, test_path);
             Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));
 

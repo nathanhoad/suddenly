@@ -365,37 +365,37 @@ lab.experiment('Generate', () => {
         
         
         lab.test('generates actions and tests', (done) => {
-            Generate.actions(config, ['thing']).then((files) => {
+            Generate.actions(config, ['boop-snoots']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(2);
                 
                 // Action
                 var actions_file_contents = FS.readFileSync(files[0], "utf8");
-                expect(actions_file_contents).to.include("'LOADING_THINGS'");
-                expect(actions_file_contents).to.include("'LOADED_THINGS'");
-                expect(actions_file_contents).to.include("'LOADING_THING'");
-                expect(actions_file_contents).to.include("'LOADED_THING'");
-                expect(actions_file_contents).to.include("'CREATING_THING'");
-                expect(actions_file_contents).to.include("'CREATED_THING'");
-                expect(actions_file_contents).to.include("'UPDATING_THING'");
-                expect(actions_file_contents).to.include("'UPDATED_THING'");
-                expect(actions_file_contents).to.include("'DELETING_THING'");
-                expect(actions_file_contents).to.include("'DELETED_THING'");
+                expect(actions_file_contents).to.include("'LOADING_BOOP_SNOOTS'");
+                expect(actions_file_contents).to.include("'LOADED_BOOP_SNOOTS'");
+                expect(actions_file_contents).to.include("'LOADING_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'LOADED_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'CREATING_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'CREATED_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'UPDATING_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'UPDATED_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'DELETING_BOOP_SNOOT'");
+                expect(actions_file_contents).to.include("'DELETED_BOOP_SNOOT'");
                 
-                expect(actions_file_contents).to.include("Actions.loadThings = () => {");
-                expect(actions_file_contents).to.include("Actions.loadedThings = (error, payload) => {");
-                expect(actions_file_contents).to.include("Actions.loadThing = (slug) => {");
-                expect(actions_file_contents).to.include("Actions.loadedThing = (error, payload) => {");
-                expect(actions_file_contents).to.include("Actions.createThing = (payload) => {");
-                expect(actions_file_contents).to.include("Actions.createdThing = (error, payload) => {");
-                expect(actions_file_contents).to.include("Actions.updateThing = (slug, payload) => {");
-                expect(actions_file_contents).to.include("Actions.updatedThing = (error, payload) => {");
-                expect(actions_file_contents).to.include("Actions.deleteThing = (slug) => {");
-                expect(actions_file_contents).to.include("Actions.deletedThing = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.loadBoopSnoots = () => {");
+                expect(actions_file_contents).to.include("Actions.loadedBoopSnoots = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.loadBoopSnoot = (slug) => {");
+                expect(actions_file_contents).to.include("Actions.loadedBoopSnoot = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.createBoopSnoot = (payload) => {");
+                expect(actions_file_contents).to.include("Actions.createdBoopSnoot = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.updateBoopSnoot = (slug, payload) => {");
+                expect(actions_file_contents).to.include("Actions.updatedBoopSnoot = (error, payload) => {");
+                expect(actions_file_contents).to.include("Actions.deleteBoopSnoot = (slug) => {");
+                expect(actions_file_contents).to.include("Actions.deletedBoopSnoot = (error, payload) => {");
                 
                 // Test
                 var test_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(test_file_contents).to.include("lab.experiment('Thing Actions', () => {");
+                expect(test_file_contents).to.include("lab.experiment('BoopSnoot Actions', () => {");
                 
                 done();
             }).catch((err) => {
@@ -445,7 +445,7 @@ lab.experiment('Generate', () => {
         
         
         lab.test('generates a reducer and tests', (done) => {
-            Generate.reducer(config, ['things']).then((files) => {
+            Generate.reducer(config, ['boop-snoots']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(3);
                 
@@ -455,17 +455,16 @@ lab.experiment('Generate', () => {
                 
                 // Adds reducer to the index
                 var reducer_index_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(reducer_index_file_contents).to.include("const things = require('./things-reducer');");
-                expect(reducer_index_file_contents).to.include("things,");
+                expect(reducer_index_file_contents).to.include("const boop_snoots = require('./boop-snoots-reducer');");
+                expect(reducer_index_file_contents).to.include("boop_snoots,");
                 
                 // Test
                 var test_file_contents = FS.readFileSync(files[2], "utf8");
-                expect(test_file_contents).to.include("lab.experiment('Things Reducer:', () => {");
+                expect(test_file_contents).to.include("lab.experiment('BoopSnoots Reducer:', () => {");
                 
                 done();
             }).catch((err) => {
                 console.log(err.stack);
-                done();
             });
         });
         
