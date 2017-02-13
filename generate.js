@@ -516,6 +516,7 @@ module.exports = Prerequisites;`;
                 plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+                single_lowercase_dashed: Inflect.dasherize(Inflect.singularize(name)).toLowerCase(),
                 single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, reducer_path);
             Log.info("Created reducer", Log.bold(justFilename(reducer_path, reducers_path)));
@@ -565,9 +566,11 @@ module.exports = Prerequisites;`;
             saveTemplate('reducer-test.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
+                plural_lowercase_dashed: Inflect.dasherize(Inflect.pluralize(name)).toLowerCase(),
                 plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
+                single_lowercase_dashed: Inflect.dasherize(Inflect.singularize(name)).toLowerCase(),
                 single_class: Inflect.camelize(Inflect.singularize(Inflect.underscore(name)))
             }, test_path);
             Log.info("Created tests", Log.bold(justFilename(test_path, tests_path)));

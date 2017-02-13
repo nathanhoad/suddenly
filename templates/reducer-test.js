@@ -6,9 +6,9 @@ const _ = require('lodash');
 const { expect } = require('code');
 const lab = exports.lab = Lab.script();
 
-const {{SINGLE_CLASS}}Actions = require('app/client/actions/{{SINGLE_LOWERCASE}}-actions');
-const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE}}-resource');
-const reducer = require('app/client/reducers/{{PLURAL_LOWERCASE}}-reducer');
+const {{SINGLE_CLASS}}Actions = require('app/client/actions/{{SINGLE_LOWERCASE_DASHED}}-actions');
+const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE_DASHED}}-resource');
+const reducer = require('app/client/reducers/{{PLURAL_LOWERCASE_DASHED}}-reducer');
 
 
 lab.experiment('{{PLURAL_CLASS}} Reducer:', () => {

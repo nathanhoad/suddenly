@@ -2,7 +2,7 @@ const Lab = require('lab');
 const Nock = require('nock');
 const Testing = require('../testing');
 const Immutable = require('immutable');
-const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE}}-resource');
+const {{SINGLE_CLASS}}Resource = require('app/server/resources/{{SINGLE_LOWERCASE_DASHED}}-resource');
 
 const { expect } = require('code');
 const lab = exports.lab = Lab.script();
@@ -10,7 +10,7 @@ const lab = exports.lab = Lab.script();
 const URL = 'http://test.com';
 Testing.mockDom(URL);
 
-const Actions = require('app/client/actions/{{SINGLE_LOWERCASE}}-actions');
+const Actions = require('app/client/actions/{{SINGLE_LOWERCASE_DASHED}}-actions');
 
 
 lab.experiment('{{SINGLE_CLASS}} Actions', () => {
