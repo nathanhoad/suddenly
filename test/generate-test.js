@@ -205,22 +205,22 @@ lab.experiment('Generate', () => {
         
         
         lab.test('generates a new routes file, resource, and tests', (done) => {
-            Generate.routes(config, ['thing']).then((files) => {
+            Generate.routes(config, ['boop-snoots']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(3);
                 
                 // Routes
                 var route_file_contents = FS.readFileSync(files[0], "utf8");
-                expect(route_file_contents).to.include("path: '/things',");
+                expect(route_file_contents).to.include("path: '/boop-snoots',");
                 
                 // Route tests
                 var test_file_contents = FS.readFileSync(files[1], "utf8");
-                expect(test_file_contents).to.include("lab.experiment('things-routes', () => {");
-                expect(test_file_contents).to.include("lab.suite('GET /things', () => {");
+                expect(test_file_contents).to.include("lab.experiment('boop-snoots-routes', () => {");
+                expect(test_file_contents).to.include("lab.suite('GET /boop-snoots', () => {");
                 
                 // Resource
                 var resource_file_contents = FS.readFileSync(files[2], "utf8");
-                expect(resource_file_contents).to.include("module.exports.public = (thing) => {");
+                expect(resource_file_contents).to.include("module.exports.public = (boop_snoot) => {");
                 
                 done();
             }).catch((err) => {
@@ -290,16 +290,16 @@ lab.experiment('Generate', () => {
         
         
         lab.test('can generate a resource route file', (done) => {
-            Generate.endpoint(config, ['things']).then((files) => {
+            Generate.endpoint(config, ['boop-snoots']).then((files) => {
                 expect(files).to.be.an.array();
                 expect(files.length).to.equal(7);
                 
-                expect(files[0]).to.contain('app/server/models/thing.js');
+                expect(files[0]).to.contain('app/server/models/boop-snoot.js');
                 expect(files[1]).to.contain('test/testing.js');
-                expect(files[2]).to.contain('_create-things.js');
-                expect(files[3]).to.contain('app/server/routes/things-routes.js');
-                expect(files[4]).to.contain('test/routes/things-routes-test.js');
-                expect(files[5]).to.contain('app/server/resources/thing-resource.js');
+                expect(files[2]).to.contain('_create-boop-snoots.js');
+                expect(files[3]).to.contain('app/server/routes/boop-snoots-routes.js');
+                expect(files[4]).to.contain('test/routes/boop-snoots-routes-test.js');
+                expect(files[5]).to.contain('app/server/resources/boop-snoot-resource.js');
                 expect(files[6]).to.contain('app/server/prerequisites.js');
                 
                 done();

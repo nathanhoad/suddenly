@@ -1,8 +1,8 @@
 const Boom = require('boom');
 const Joi = require('joi');
 const Prerequisites = require('app/server/prerequisites');
-const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE}}');
-const {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE}}-resource');
+const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE_DASHED}}');
+const {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE_DASHED}}-resource');
 
 const TRY_TOKEN = { mode: 'try', strategy: 'jwt' };
 

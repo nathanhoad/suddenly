@@ -231,9 +231,10 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             
             saveTemplate(template, { 
                 route: route,
-                model_class: Inflect.classify(name.replace('-', '_')),
-                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_'))),
-                models_lowercase: Inflect.pluralize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
+                model_class: Inflect.classify(Inflect.underscore(name)),
+                model_lowercase: Inflect.singularize(Inflect.underscore(name)).toLowerCase(),
+                model_lowercase_dashed: Inflect.singularize(Inflect.dasherize(name)).toLowerCase(),
+                models_lowercase: Inflect.pluralize(Inflect.underscore(name)).toLowerCase()
             }, route_path);
             Log.info("Created routes", Log.bold(justFilename(route_path, routes_path)));
 
@@ -270,9 +271,10 @@ Testing.create{{MODEL_CLASS}} = (details) => {
             
             saveTemplate(template, {
                 route: route,
-                model_class: Inflect.classify(name.replace('-', '_')),
-                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_'))),
-                models_lowercase: Inflect.pluralize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
+                model_class: Inflect.classify(Inflect.underscore(name)),
+                model_lowercase: Inflect.singularize(Inflect.underscore(name)).toLowerCase(),
+                model_lowercase_dashed: Inflect.singularize(Inflect.dasherize(name)).toLowerCase(),
+                models_lowercase: Inflect.pluralize(Inflect.underscore(name)).toLowerCase()
             }, route_test_path);
             Log.info("Created test", Log.bold(justFilename(route_test_path, routes_tests_path)));
 
@@ -324,8 +326,8 @@ module.exports = Prerequisites;`;
             prerequisites = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE}}');\nconst {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE}}-resource');\n${prerequisites}`;
             
             saveTemplate(prerequisites, {
-                model_class: Inflect.classify(name.replace('-', '_')),
-                model_lowercase: Inflect.singularize(Inflect.dasherize(name.toLowerCase().replace(' ', '_')))
+                model_class: Inflect.classify(Inflect.underscore(name)),
+                model_lowercase: Inflect.singularize(Inflect.underscore(name)).toLowerCase()
             }, prerequisites_path);
             Log.warning('Modified', Log.bold('app/server/prerequisites.js'));
             
