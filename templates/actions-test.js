@@ -47,7 +47,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('can load {{PLURAL_LOWERCASE}}', (done) => {
-        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}').reply(200, {{PLURAL_LOWERCASE}});
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE_DASHED}}').reply(200, {{PLURAL_LOWERCASE}});
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
@@ -62,7 +62,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('loading {{PLURAL_LOWERCASE}} can fail', (done) => {
-        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{PLURAL_LOWERCASE}} failed' });
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE_DASHED}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{PLURAL_LOWERCASE}} failed' });
         
         store.dispatch(Actions.load{{PLURAL_CLASS}}()).then(() => {
             let actions = store.getActions();
@@ -77,7 +77,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('can load a {{SINGLE_LOWERCASE}}', (done) => {
-        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE_DASHED}}/x').reply(200, {{PLURAL_LOWERCASE}}[0]);
         
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
@@ -92,7 +92,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('loading a {{SINGLE_LOWERCASE}} can fail', (done) => {
-        Nock(URL).get('/app/{{PLURAL_LOWERCASE}}/x').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).get('/app/{{PLURAL_LOWERCASE_DASHED}}/x').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Loading {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.load{{SINGLE_CLASS}}('x')).then(() => {
             let actions = store.getActions();
@@ -111,7 +111,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'New {{SINGLE_CLASS}}'
         };
         
-        Nock(URL).post('/app/{{PLURAL_LOWERCASE}}').reply(200, {{SINGLE_CLASS}}Resource.public(new_{{SINGLE_LOWERCASE}}));
+        Nock(URL).post('/app/{{PLURAL_LOWERCASE_DASHED}}').reply(200, {{SINGLE_CLASS}}Resource.public(new_{{SINGLE_LOWERCASE}}));
         
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
@@ -130,7 +130,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'New {{SINGLE_CLASS}}'
         };
         
-        Nock(URL).post('/app/{{PLURAL_LOWERCASE}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Creating {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).post('/app/{{PLURAL_LOWERCASE_DASHED}}').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Creating {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.create{{SINGLE_CLASS}}(new_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
@@ -148,7 +148,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'Updated {{SINGLE_CLASS}}'
         };
         
-        Nock(URL).put('/app/{{PLURAL_LOWERCASE}}/slug').reply(200, {{SINGLE_CLASS}}Resource.public(updating_{{SINGLE_LOWERCASE}}));
+        Nock(URL).put('/app/{{PLURAL_LOWERCASE_DASHED}}/slug').reply(200, {{SINGLE_CLASS}}Resource.public(updating_{{SINGLE_LOWERCASE}}));
         
         store.dispatch(Actions.update{{SINGLE_CLASS}}('slug', updating_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
@@ -167,7 +167,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
             name: 'Updated {{SINGLE_CLASS}}'
         };
         
-        Nock(URL).put('/app/{{PLURAL_LOWERCASE}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Updating {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).put('/app/{{PLURAL_LOWERCASE_DASHED}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Updating {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.update{{SINGLE_CLASS}}(updating_{{SINGLE_LOWERCASE}})).then(() => {
             let actions = store.getActions();
@@ -182,7 +182,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('can delete a given {{SINGLE_LOWERCASE}}', (done) => {
-        Nock(URL).delete('/app/{{PLURAL_LOWERCASE}}/slug').reply(200, {});
+        Nock(URL).delete('/app/{{PLURAL_LOWERCASE_DASHED}}/slug').reply(200, {});
         
         store.dispatch(Actions.delete{{SINGLE_CLASS}}('slug')).then(() => {
             let actions = store.getActions();
@@ -198,7 +198,7 @@ lab.experiment('{{SINGLE_CLASS}} Actions', () => {
     
     
     lab.test('deleting a given {{SINGLE_LOWERCASE}} can fail', (done) => {
-        Nock(URL).delete('/app/{{PLURAL_LOWERCASE}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Deleting {{SINGLE_LOWERCASE}} failed' });
+        Nock(URL).delete('/app/{{PLURAL_LOWERCASE_DASHED}}/slug').reply(400, { statusCode: 400, error: 'Bad Request', message: 'Deleting {{SINGLE_LOWERCASE}} failed' });
         
         store.dispatch(Actions.delete{{SINGLE_CLASS}}('slug')).then(() => {
             let actions = store.getActions();
