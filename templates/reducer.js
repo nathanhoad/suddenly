@@ -1,6 +1,6 @@
 const { reducer } = require('suddenly-redux');
 const Immutable = require('immutable');
-const {{SINGLE_CLASS}}Actions = require('app/client/actions/{{SINGLE_LOWERCASE}}-actions');
+const {{SINGLE_CLASS}}Actions = require('app/client/actions/{{SINGLE_LOWERCASE_DASHED}}-actions');
 
 
 const initial_state = Immutable.fromJS({
