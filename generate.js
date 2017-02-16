@@ -438,6 +438,7 @@ module.exports = Prerequisites;`;
             saveTemplate('actions.js', {
                 plural_constant: Inflect.underscore(Inflect.pluralize(name)).toUpperCase(),
                 plural_lowercase: Inflect.underscore(Inflect.pluralize(name)).toLowerCase(),
+                plural_lowercase_dashed: Inflect.dasherize(Inflect.pluralize(name)).toLowerCase(),
                 plural_class: Inflect.camelize(Inflect.pluralize(Inflect.underscore(name))),
                 single_constant: Inflect.underscore(Inflect.singularize(name)).toUpperCase(),
                 single_lowercase: Inflect.underscore(Inflect.singularize(name)).toLowerCase(),
