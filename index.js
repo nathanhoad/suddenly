@@ -9,7 +9,7 @@ const APP_ROOT = require('app-root-path').toString();
 
 
 function Suddenly () {
-    this.WEBPACK_CONFIG = Builder.DEFAULT_WEBPACK_CONFIG;
+    this.defaultWebpackConfig = Builder.defaultWebpackConfig;
     
     this.tasks = {};
 }

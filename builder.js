@@ -16,15 +16,29 @@ function flags (args) {
 }
 
 
+function clearRequireCache (target) {
+    Object.keys(require.cache).forEach((key) => {
+        if (key.includes(target)) {
+            delete require.cache[key];
+        }
+    });
+}
+
+
 // Load the webpack config and apply hot reload options if needed
 function webpackConfig (config, args, logged) {
+    config = config || {};
     args = flags(args);
     
     let app_root = Path.resolve(config.APP_ROOT || APP_ROOT);
     
     var webpack_config;
     try {
+        clearRequireCache(`${app_root}/webpack.config`);
         webpack_config = require(`${app_root}/webpack.config`);
+        if (typeof webpack_config === "function") {
+            webpack_config = webpack_config(config, args);
+        }
     } catch (e) {
         webpack_config = defaultWebpackConfig(config, args);
     }
@@ -134,11 +148,7 @@ Tasks.run = function (config, args) {
             server.watcher = watcher = FS.watch(server_path, { recursive: true }, (event, filename) => {
                 server.stop(() => {
                     // Load in any actual file changes
-                    Object.keys(require.cache).forEach((key) => {
-                        if (key.includes(`${server_path}/`)) {
-                            delete require.cache[key];
-                        }
-                    });
+                    clearRequireCache(`${server_path}/`);
                     server = require(server_path);
                     server.watcher = watcher;
                     
@@ -190,4 +200,4 @@ Tasks.buildAndRun = function (config) {
 
 
 module.exports = Tasks;
-module.exports.DEFAULT_WEBPACK_CONFIG = defaultWebpackConfig();
+module.exports.defaultWebpackConfig = defaultWebpackConfig;
