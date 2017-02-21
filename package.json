@@ -1,6 +1,6 @@
 {
   "name": "suddenly",
-  "version": "1.25.1",
+  "version": "1.25.2",
   "description": "The tools that power Suddenly apps",
   "main": "index.js",
   "scripts": {
