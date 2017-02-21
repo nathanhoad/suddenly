@@ -28,7 +28,7 @@ Actions.load{{PLURAL_CLASS}} = () => {
         
         dispatch({ type: Actions.LOADING_{{PLURAL_CONSTANT}} });
         
-        return API.get('/app/{{PLURAL_LOWERCASE}}').then(({{PLURAL_LOWERCASE}}) => {
+        return API.get('/app/{{PLURAL_LOWERCASE_DASHED}}').then(({{PLURAL_LOWERCASE}}) => {
             {{PLURAL_LOWERCASE}} = Immutable.fromJS({{PLURAL_LOWERCASE}});
             dispatch(Actions.loaded{{PLURAL_CLASS}}(null, {{PLURAL_LOWERCASE}}));
         }).catch((err) => {
@@ -54,7 +54,7 @@ Actions.load{{SINGLE_CLASS}} = (slug) => {
         
         dispatch({ type: Actions.LOADING_{{SINGLE_CONSTANT}} });
         
-        return API.get(`/app/{{PLURAL_LOWERCASE}}/${slug}`).then(({{SINGLE_LOWERCASE}}) => {
+        return API.get(`/app/{{PLURAL_LOWERCASE_DASHED}}/${slug}`).then(({{SINGLE_LOWERCASE}}) => {
             {{SINGLE_LOWERCASE}} = Immutable.fromJS({{SINGLE_LOWERCASE}});
             dispatch(Actions.loaded{{SINGLE_CLASS}}(null, {{SINGLE_LOWERCASE}}));
         }).catch((err) => {
@@ -77,7 +77,7 @@ Actions.create{{SINGLE_CLASS}} = (payload) => {
     return (dispatch, getState) => {
         dispatch({ type: Actions.CREATING_{{SINGLE_CONSTANT}} });
         
-        return API.post('/app/{{PLURAL_LOWERCASE}}', payload).then(({{SINGLE_LOWERCASE}}) => {
+        return API.post('/app/{{PLURAL_LOWERCASE_DASHED}}', payload).then(({{SINGLE_LOWERCASE}}) => {
             {{SINGLE_LOWERCASE}} = Immutable.fromJS({{SINGLE_LOWERCASE}});
             dispatch(Actions.created{{SINGLE_CLASS}}(null, {{SINGLE_LOWERCASE}}));
         }).catch((err) => {
@@ -100,7 +100,7 @@ Actions.update{{SINGLE_CLASS}} = (slug, payload) => {
     return (dispatch, getState) => {
         dispatch({ type: Actions.UPDATING_{{SINGLE_CONSTANT}} });
         
-        return API.put(`/app/{{PLURAL_LOWERCASE}}/${slug}`, payload).then(({{SINGLE_LOWERCASE}}) => {
+        return API.put(`/app/{{PLURAL_LOWERCASE_DASHED}}/${slug}`, payload).then(({{SINGLE_LOWERCASE}}) => {
             {{SINGLE_LOWERCASE}} = Immutable.fromJS({{SINGLE_LOWERCASE}});
             dispatch(Actions.updated{{SINGLE_CLASS}}(null, {{SINGLE_LOWERCASE}}));
         }).catch((err) => {
@@ -123,7 +123,7 @@ Actions.delete{{SINGLE_CLASS}} = (slug) => {
     return (dispatch, getState) => {
         dispatch({ type: Actions.DELETING_{{SINGLE_CONSTANT}} });
         
-        return API.delete(`/app/{{PLURAL_LOWERCASE}}/${slug}`).then(({{SINGLE_LOWERCASE}}) => {
+        return API.delete(`/app/{{PLURAL_LOWERCASE_DASHED}}/${slug}`).then(({{SINGLE_LOWERCASE}}) => {
             {{SINGLE_LOWERCASE}} = Immutable.fromJS({{SINGLE_LOWERCASE}});
             dispatch(Actions.deleted{{SINGLE_CLASS}}(null, {{SINGLE_LOWERCASE}}));
         }).catch((err) => {
