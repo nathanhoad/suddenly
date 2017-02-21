@@ -323,11 +323,12 @@ module.exports = Prerequisites;`;
             let prerequisites = FS.readFileSync(prerequisites_path, 'utf8');
             
             prerequisites = prerequisites.replace(/}[,\s]*?}[;\s]*?module\.exports = Prerequisites;/, prerequisite_method_template);
-            prerequisites = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE}}');\nconst {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE}}-resource');\n${prerequisites}`;
+            prerequisites = `const {{MODEL_CLASS}} = require('app/server/models/{{MODEL_LOWERCASE_DASHED}}');\nconst {{MODEL_CLASS}}Resource = require('app/server/resources/{{MODEL_LOWERCASE_DASHED}}-resource');\n${prerequisites}`;
             
             saveTemplate(prerequisites, {
                 model_class: Inflect.classify(Inflect.underscore(name)),
-                model_lowercase: Inflect.singularize(Inflect.underscore(name)).toLowerCase()
+                model_lowercase: Inflect.singularize(Inflect.underscore(name)).toLowerCase(),
+                model_lowercase_dashed: Inflect.singularize(Inflect.dasherize(name)).toLowerCase()
             }, prerequisites_path);
             Log.warning('Modified', Log.bold('app/server/prerequisites.js'));
             
