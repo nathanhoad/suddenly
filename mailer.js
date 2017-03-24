@@ -84,3 +84,5 @@ module.exports.create = function (config) {
         }
     });
 };
+
+module.exports.Handlebars = Handlebars;
