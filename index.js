@@ -18,6 +18,7 @@ Suddenly.prototype.Log = Log;
 
 Suddenly.prototype.routes = Server.routes;
 Suddenly.prototype.mailer = Mailer.create;
+Suddenly.prototype.mailer.Handlebars = Mailer.Handlebars;
 
 /*
     Register a command line task
