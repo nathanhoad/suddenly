@@ -171,7 +171,10 @@ Tasks.run = function (config, args) {
             hot: true,
             contentBase: `${app_root}/build/`,
             publicPath: '/assets/',
-            noInfo: true
+            noInfo: true,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+            },
         });
         assetServer.listen(DEV_SERVER_PORT, "localhost", (err) => {
             if (err) return reject(err);
